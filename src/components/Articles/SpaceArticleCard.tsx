@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ExternalLink, User, Calendar } from "lucide-react";
+import { User, Calendar } from "lucide-react";
 import type { Article } from "../../types";
 
 interface Props {

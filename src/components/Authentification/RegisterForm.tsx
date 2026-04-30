@@ -61,11 +61,12 @@ const handleSubmit = async (e: React.FormEvent) => {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-  } catch (err: any) {
-    setErrors({ general: err.message });
-  } finally {
-    setIsLoading(false);
-  }
+} catch (err: unknown) {
+  const message =
+    err instanceof Error ? err.message : "Erreur inconnue";
+
+  setErrors({ general: message });
+}
 };
 
 return (

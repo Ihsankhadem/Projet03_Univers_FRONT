@@ -1,8 +1,8 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
-import logo from "../../assets/logo.png";
-import { useAuth } from "../../context/AuthContext";
+import logo from "../../assets/astronaute.png";
+import { useAuth } from "../../Hooks/useAuth";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

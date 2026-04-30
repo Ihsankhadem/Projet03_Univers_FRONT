@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import AuthField from "./AuthField";
 import Button from "../ui/Buttons";
 import {api} from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface FormData { email: string; password: string; }
@@ -46,6 +46,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   if (!validate()) return;
 
+  setErrors({});
   setIsLoading(true);
 
   try {
@@ -65,9 +66,16 @@ const handleSubmit = async (e: React.FormEvent) => {
     login(data.token, data.user);
 
     navigate("/dashboard");
+  } catch (error: unknown) {
+    let message = "Erreur de connexion";
 
-  } catch (err: any) {
-    setErrors({ general: err.message });
+    if (error instanceof Error) {
+      message = error.message;
+    }
+
+    setErrors({
+      general: message,
+    });
   } finally {
     setIsLoading(false);
   }
