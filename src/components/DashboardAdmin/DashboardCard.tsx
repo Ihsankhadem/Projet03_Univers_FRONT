@@ -44,7 +44,6 @@ export default function DashboardCard({
 
   return (
     <div className="bg-white border border-slate-100 rounded-2xl p-5 flex flex-col gap-4 hover:border-slate-200 transition-colors">
-      {/* Top row: label + icon */}
       <div className="flex items-start justify-between">
         <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">
           {title}
@@ -54,12 +53,10 @@ export default function DashboardCard({
         </div>
       </div>
 
-      {/* Value */}
       <p className="text-3xl font-semibold text-slate-800 leading-none tabular-nums">
         {value.toLocaleString("fr-FR")}
       </p>
 
-      {/* Delta */}
       {delta && (
         <div className="flex items-center gap-1.5">
           <span className={`text-xs font-semibold ${colors.delta}`}>

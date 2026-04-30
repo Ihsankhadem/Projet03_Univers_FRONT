@@ -45,9 +45,27 @@ export interface Event {
 export interface Category {
   id: number;
   name: string;
+  total_articles: number;
+
+  articles?: CategoryArticle[];
 }
 
-export type Tab = "articles" | "categories" | "abonnes" | "utilisateurs";
+// ---------------- CATEGORY DETAIL ----------------
+
+export interface CategoryArticle {
+  id: number;
+  title: string;
+  image?: string;
+  created_at: string;
+}
+
+export interface CategoryDetail {
+  id: number;
+  name: string;
+  articles: CategoryArticle[];
+}
+
+export type Tab = "articles" | "categories" | "utilisateurs";
 
 export type DashboardStats = {
   articles: {
@@ -68,3 +86,30 @@ export type PaginatedArticles = {
   totalPages: number;
 };
 
+
+
+// ---------------- AUTH ----------------
+
+export type Role = "rédacteur" | "administrateur";
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
+}
+
+export interface JwtPayload {
+  id: number;
+  role: Role;
+  exp?: number;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  login: (token: string, user: User) => void;
+  logout: () => void;
+}

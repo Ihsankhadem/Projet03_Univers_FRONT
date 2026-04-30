@@ -1,3 +1,5 @@
+
+// components/DashboardAdmin/AdminArticles/ArticlesTable.tsx
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import type { Article } from "../../../types";
 

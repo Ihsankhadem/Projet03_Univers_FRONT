@@ -45,7 +45,9 @@ export default function DashboardAdmin() {
   });
 
   // ---------------- ARTICLES ----------------
-  const { data: articlesData, isLoading: loadingArticles } = useQuery<Article[]>({
+  const { data: articlesData, isLoading: loadingArticles } = useQuery<
+    Article[]
+  >({
     queryKey: ["articles-admin", debouncedSearch],
     queryFn: () => dashboardApi.getArticles(debouncedSearch),
     placeholderData: (prev) => prev,
@@ -56,13 +58,8 @@ export default function DashboardAdmin() {
 
   // ---------------- PAGINATION ----------------
   const allArticles = articlesData ?? [];
-
   const totalPages = Math.ceil(allArticles.length / limit);
-
-  const paginatedArticles = allArticles.slice(
-    (page - 1) * limit,
-    page * limit
-  );
+  const paginatedArticles = allArticles.slice((page - 1) * limit, page * limit);
 
   // ---------------- STATUS ----------------
   const toggleStatus = async (article: Article) => {
@@ -82,13 +79,12 @@ export default function DashboardAdmin() {
         if (!old) return old;
 
         return old.map((a) =>
-          a.id === article.id ? { ...a, status: newStatus } : a
+          a.id === article.id ? { ...a, status: newStatus } : a,
         );
-      }
+      },
     );
   };
 
-  // ---------------- DELETE ----------------
   const handleDelete = (id: number) => {
     setPendingDeleteId(id);
     setConfirmOpen(true);
@@ -105,37 +101,37 @@ export default function DashboardAdmin() {
         if (!old) return old;
 
         return old.filter((a) => a.id !== pendingDeleteId);
-      }
+      },
     );
 
     setConfirmOpen(false);
     setPendingDeleteId(null);
   };
 
-return (
-  <div className="min-h-screen bg-[#F8F7FF]">
-    <DashboardHeader />
+  return (
+    <div className="min-h-screen bg-[#F8F7FF]">
+      <DashboardHeader />
 
-    {/* STATS */}
-    <div className="px-8 mt-8">
-      <h2 className="text-lg font-semibold text-slate-800 mb-4">
-        Vue d’ensemble
-      </h2>
+      {/* STATS */}
+      <div className="px-8 mt-8">
+        <h2 className="text-lg font-semibold text-slate-800 mb-4">
+          Vue d’ensemble
+        </h2>
 
-      {loadingStats ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-white rounded-xl animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        stats && (
+        {loadingStats ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-24 bg-white rounded-xl animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          stats && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <DashboardCard
                 title="Articles"
                 value={stats.articles.total}
-                delta="+8" deltaLabel="ce mois"
+                delta="+8"
+                deltaLabel="ce mois"
                 icon={<FileText className="w-4 h-4" />}
                 accent="purple"
               />
@@ -154,86 +150,90 @@ return (
               <DashboardCard
                 title="Utilisateurs"
                 value={stats.users}
-                delta="+132" deltaLabel="nouveaux"
+                delta="+132"
+                deltaLabel="nouveaux"
                 icon={<Users className="w-4 h-4" />}
                 accent="blue"
               />
+            </div>
+          )
+        )}
+      </div>
+
+      <div className="px-8 mt-10 pb-20">
+        <div className="px-8 mt-10 pb-20">
+          <div className="rounded-2xl p-8 bg-[rgba(255,255,255,0.6)] backdrop-blur-md border border-[#E2E8F0] shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="w-full max-w-md">
+                <DashboardSearch value={search} onChange={handleSearch} />
+              </div>
+
+              <div className="flex justify-left">
+                <button
+                  onClick={() => navigate("/dashboard/articles/add")}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-600/90 hover:bg-violet-500 text-white font-medium shadow-lg shadow-violet-500/20 transition-all duration-200 hover:scale-[1.02]"
+                >
+                  + Ajouter un article
+                </button>
+              </div>
+
+              <div className="flex-shrink-0">
+                <DashboardTabs
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              {loadingArticles ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-16 bg-white rounded-xl animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : paginatedArticles.length === 0 ? (
+                <div className="text-center py-10 text-slate-500">
+                  Aucun article trouvé.
+                </div>
+              ) : (
+                <>
+                  <ArticlesTable
+                    articles={paginatedArticles}
+                    onEdit={handleEdit}
+                    onToggleStatus={toggleStatus}
+                    onDelete={handleDelete}
+                  />
+
+                  <PopConfirm
+                    open={confirmOpen}
+                    title="Supprimer l’article"
+                    message="Cette action est irréversible."
+                    confirmLabel="Supprimer"
+                    cancelLabel="Annuler"
+                    onConfirm={confirmDelete}
+                    onCancel={() => {
+                      setConfirmOpen(false);
+                      setPendingDeleteId(null);
+                    }}
+                  />
+                </>
+              )}
+            </div>
+
+            <div className="mt-10">
+              <ArticlesPagination
+                page={page}
+                totalPages={totalPages}
+                onPage={setPage}
+              />
+            </div>
           </div>
-        )
-      )}
-    </div>
-
-    <div className="px-8 mt-10 pb-20">
-<div className="px-8 mt-10 pb-20">
-  <div className="rounded-2xl p-8 bg-[rgba(255,255,255,0.6)] backdrop-blur-md border border-[#E2E8F0] shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
-
-    {/* SEARCH + TABS ALIGNÉS */}
-    <div className="flex items-center justify-between gap-6">
-
-      {/* SEARCH */}
-      <div className="w-full max-w-md">
-        <DashboardSearch value={search} onChange={handleSearch} />
-      </div>
-
-      {/* TABS */}
-      <div className="flex-shrink-0">
-        <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
-
-    </div>
-
-    {/* TABLE */}
-    <div className="mt-6">
-      {loadingArticles ? (
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-white rounded-xl animate-pulse" />
-          ))}
         </div>
-      ) : paginatedArticles.length === 0 ? (
-        <div className="text-center py-10 text-slate-500">
-          Aucun article trouvé.
-        </div>
-      ) : (
-        <>
-          <ArticlesTable
-            articles={paginatedArticles}
-            onEdit={handleEdit}
-            onToggleStatus={toggleStatus}
-            onDelete={handleDelete}
-          />
-
-          <PopConfirm
-            open={confirmOpen}
-            title="Supprimer l’article"
-            message="Cette action est irréversible."
-            confirmLabel="Supprimer"
-            cancelLabel="Annuler"
-            onConfirm={confirmDelete}
-            onCancel={() => {
-              setConfirmOpen(false);
-              setPendingDeleteId(null);
-            }}
-          />
-        </>
-      )}
+      </div>
     </div>
-
-    {/* PAGINATION */}
-    <div className="mt-10">
-      <ArticlesPagination
-        page={page}
-        totalPages={totalPages}
-        onPage={setPage}
-      />
-    </div>
-
-  </div>
-</div>
-
-    </div>
-  </div>
-);
-
-
+  );
 }

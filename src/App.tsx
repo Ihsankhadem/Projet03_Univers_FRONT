@@ -11,10 +11,12 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/DashboardAdminPage/DashboardAdmin";
-import UpdateArticle from "./pages/DashboardAdminPage/UpdateArticle";
+import UpdateArticle from "./pages/DashboardAdminPage/UpdateArticlePage";
+import CategoryPage from "./pages/DashboardAdminPage/CategoryPage";
 
 import AdminRoutes from "./routes/Admin.routes";
 import "./index.css";
+import AddArticle from "./pages/DashboardAdminPage/AddArticlePage";
 
 const AUTH_ROUTES = ["/auth"];
 
@@ -32,9 +34,10 @@ function Layout() {
           <Route path="/articles" element={<ArticlesPage />} />
           <Route path="/articles/:id" element={<DetailsArticle />} />
           <Route path="/nasa/:id" element={<DetailsSpaceArticle />} />
-
+          <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />
 
+          {/* DASHBOARD */}
           <Route
             path="/dashboard"
             element={
@@ -44,7 +47,16 @@ function Layout() {
             }
           />
 
-            <Route
+          <Route
+            path="/dashboard/articles/add"
+            element={
+              <AdminRoutes>
+                <AddArticle />
+              </AdminRoutes>
+            }
+          />
+
+          <Route
             path="/dashboard/articles/:id/edit"
             element={
               <AdminRoutes>
@@ -53,8 +65,27 @@ function Layout() {
             }
           />
 
+          {/* CATEGORIES */}
+          <Route
+            path="/categories"
+            element={
+              <AdminRoutes>
+                <CategoryPage />
+              </AdminRoutes>
+            }
+          />
 
-          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/categories/:id"
+            element={
+              <AdminRoutes>
+                <CategoryPage />
+              </AdminRoutes>
+            }
+          />
+
+
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

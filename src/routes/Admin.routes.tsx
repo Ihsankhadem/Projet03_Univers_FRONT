@@ -1,9 +1,7 @@
-
-// routes/Admin.routes.tsx - composant de protection des routes admin, vérifie la présence d'un token valide et le rôle de l'utilisateur
-
 import { jwtDecode } from "jwt-decode";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../Hooks/useAuth";
+
 
 interface TokenPayload {
   id: number;
@@ -11,39 +9,45 @@ interface TokenPayload {
   exp?: number;
 }
 
-export default function AdminRoutes({ children }: { children: React.ReactNode }) {
+export default function AdminRoutes({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { token, user, logout, loading } = useAuth();
 
-  // Pendant le chargement du contexte
   if (loading) {
     return <div className="text-center py-10">Chargement…</div>;
   }
 
-  // Pas de token ou pas d'utilisateur → pas connecté
   if (!token || !user) {
     return <Navigate to="/auth" replace />;
   }
 
+  let isExpired = false;
+  let isAdmin = false;
+
   try {
     const payload = jwtDecode<TokenPayload>(token);
 
-    // Vérification expiration
-    if (payload.exp && payload.exp * 1000 < Date.now()) {
-      logout();
-      return <Navigate to="/auth" replace />;
-    }
+    const currentTime = new Date().getTime(); 
 
-    // Vérification rôle admin
-    if (payload.role !== "administrateur") {
-      return <Navigate to="/" replace />;
-    }
-
-    return children;
+    isExpired = payload.exp ? payload.exp * 1000 < currentTime : false;
+    isAdmin = payload.role === "administrateur";
   } catch (err) {
-    console.error("AdminRoutes error:", err);
+    console.error("Token invalide:", err);
     logout();
     return <Navigate to="/auth" replace />;
   }
+
+  if (isExpired) {
+    logout();
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
 }
-
-

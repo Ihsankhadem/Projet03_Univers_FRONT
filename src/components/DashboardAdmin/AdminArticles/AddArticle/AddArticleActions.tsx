@@ -1,15 +1,14 @@
-import type { NavigateFunction } from "react-router-dom";
 
-type Props = {
-  navigate: NavigateFunction;
-};
 
-export default function UpdateArticleActions({ navigate }: Props) {
+interface Props {
+  onCancel: () => void;
+}
+export default function AddArticleActions({ onCancel }: Props) {
   return (
     <div className="flex gap-3">
       <button
         type="button"
-        onClick={() => navigate("/dashboard")}
+        onClick={onCancel}
         className="flex-1 border border-slate-300 rounded-2xl py-3 text-slate-700 hover:bg-slate-100 transition"
       >
         Annuler

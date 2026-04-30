@@ -1,3 +1,5 @@
+// components/DashboardAdmin/DashboardTabs.tsx
+import { useNavigate } from "react-router-dom";
 import type { Tab } from "../../types";
 
 interface Props {
@@ -12,17 +14,40 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 export default function DashboardTabs({ activeTab, setActiveTab }: Props) {
+  const navigate = useNavigate();
+
+  const handleTabClick = (tab: Tab) => {
+    setActiveTab(tab);
+
+    switch (tab) {
+      case "articles":
+        navigate("/dashboard");
+        break;
+
+      case "categories":
+        navigate("/categories");
+        break;
+
+      case "utilisateurs":
+        navigate("/dashboard/users");
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <div
       role="tablist"
-      className="flex items-center gap-1 bg-slate-100 rounded-lg p-1"
+      className="flex items-center gap-1 rounded-lg bg-slate-100 p-1"
     >
       {TABS.map(({ id, label }) => (
         <button
           key={id}
           role="tab"
           aria-selected={activeTab === id}
-          onClick={() => setActiveTab(id)}
+          onClick={() => handleTabClick(id)}
           className={`
             px-3.5 py-1.5 rounded-md text-sm font-medium transition-all
             focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500

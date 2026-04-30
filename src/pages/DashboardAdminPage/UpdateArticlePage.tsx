@@ -10,6 +10,7 @@ import UpdateArticleForm from "../../components/DashboardAdmin/AdminArticles/Upd
 import UpdateArticleSidebar from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleSidebar";
 import UpdateArticleImage from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleImage";
 import UpdateArticleActions from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleActions";
+import { Category } from "../../types";
 
 export default function UpdateArticle() {
   const { id } = useParams();
@@ -24,7 +25,7 @@ export default function UpdateArticle() {
     "publié" | "brouillon" | "suspendu"
   >("brouillon");
 
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
