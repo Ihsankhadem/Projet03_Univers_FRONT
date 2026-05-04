@@ -1,5 +1,3 @@
-
-
 // const horaires = [
 //   ["Lundi - Vendredi", "9h - 18h"],
 //   ["Samedi", "10h - 16h"],

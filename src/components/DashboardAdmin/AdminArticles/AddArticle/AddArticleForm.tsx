@@ -13,7 +13,6 @@ export default function AddArticleForm({
 }: Props) {
   return (
     <div className="space-y-6">
-
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Titre
@@ -40,7 +39,6 @@ export default function AddArticleForm({
           className="w-full min-h-[350px] bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-sm"
         />
       </div>
-
     </div>
   );
 }

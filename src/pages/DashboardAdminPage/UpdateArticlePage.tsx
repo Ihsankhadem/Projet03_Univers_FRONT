@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -21,9 +20,9 @@ export default function UpdateArticle() {
   const [image, setImage] = useState<string | null>(null);
   const [authorName, setAuthorName] = useState("");
   const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [status, setStatus] = useState<
-    "publié" | "brouillon" | "suspendu"
-  >("brouillon");
+  const [status, setStatus] = useState<"publié" | "brouillon" | "suspendu">(
+    "brouillon",
+  );
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,12 +77,10 @@ export default function UpdateArticle() {
   return (
     <div className="min-h-screen bg-[#F8F7FF] px-4 py-8">
       <div className="max-w-6xl mx-auto">
-
         <UpdateArticleHeader />
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-
             <UpdateArticleForm
               title={title}
               content={content}
@@ -121,4 +118,3 @@ export default function UpdateArticle() {
     </div>
   );
 }
-

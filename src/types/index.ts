@@ -1,4 +1,3 @@
-
 // types/index.ts
 
 export interface Article {
@@ -85,8 +84,6 @@ export type PaginatedArticles = {
   data: Article[];
   totalPages: number;
 };
-
-
 
 // ---------------- AUTH ----------------
 

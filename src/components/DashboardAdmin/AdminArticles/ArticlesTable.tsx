@@ -1,4 +1,3 @@
-
 // components/DashboardAdmin/AdminArticles/ArticlesTable.tsx
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import type { Article } from "../../../types";
@@ -41,7 +40,6 @@ export default function ArticlesTable({
 
   return (
     <div className="mt-4">
-
       {/* ─── MOBILE ─── */}
       <div className="sm:hidden flex flex-col gap-3 px-4">
         {articles.map((a) => (
@@ -61,7 +59,9 @@ export default function ArticlesTable({
                   STATUS_STYLES[a.status].badge
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[a.status].dot}`} />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[a.status].dot}`}
+                />
                 {a.status}
               </button>
               <span className="text-xs text-slate-400">

@@ -1,5 +1,3 @@
-
-
 import { Mail, Phone, MapPin, type LucideIcon } from "lucide-react";
 // icone + titre + lignes d'infos sont regroupés dans un tableau d'objets pour éviter de répéter le même code pour chaque info et ce sont des propriétés de chaque objet qui sont utilisées pour afficher les infos dans le composant ContactInfoCard.
 const infos: { icon: LucideIcon; title: string; lines: string[] }[] = [
@@ -33,9 +31,11 @@ export default function ContactInfoCard() {
           </div>
           <div>
             <p className="font-semibold text-slate-100 mb-1">{title}</p>
-{/* .map = parcourir les lignes */}
+            {/* .map = parcourir les lignes */}
             {lines.map((l) => (
-              <p key={l} className="text-slate-400 text-sm">{l}</p>
+              <p key={l} className="text-slate-400 text-sm">
+                {l}
+              </p>
             ))}
           </div>
         </div>

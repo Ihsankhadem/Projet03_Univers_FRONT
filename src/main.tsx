@@ -1,4 +1,3 @@
-
 // main.tsx - point d'entrée de l'application, on y configure les providers globaux (authentification, router, query client)
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -19,5 +18,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </BrowserRouter>
       </AuthProvider>
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

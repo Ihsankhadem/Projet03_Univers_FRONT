@@ -1,5 +1,4 @@
-
-import { Routes, Route, useLocation} from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
@@ -84,8 +83,6 @@ function Layout() {
             }
           />
 
-
-
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -98,7 +95,3 @@ function Layout() {
 export default function App() {
   return <Layout />;
 }
-
-
-
-

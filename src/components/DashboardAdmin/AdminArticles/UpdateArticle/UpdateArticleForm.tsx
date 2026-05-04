@@ -13,7 +13,6 @@ export default function AddArticleForm({
 }: Props) {
   return (
     <div className="xl:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-6">
-
       {/* TITRE */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -42,7 +41,6 @@ export default function AddArticleForm({
           placeholder="Écris ton article ici..."
         />
       </div>
-
     </div>
   );
 }
