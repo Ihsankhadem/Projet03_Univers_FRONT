@@ -1,5 +1,5 @@
-// components/DashboardAdmin/AdminCategories/CategoriesTable.tsx
-import { Folder, Pencil, Trash2} from "lucide-react";
+// components/DashboardAdmin/AdminCategories/CategoriesGrid.tsx
+import { Folder, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Category } from "../../../types";
 
@@ -9,7 +9,7 @@ interface Props {
   onDelete?: (id: number) => void;
 }
 
-export default function CategoriesTable({
+export default function CategoriesGrid({
   categories,
   onEdit,
   onDelete,
@@ -38,7 +38,7 @@ export default function CategoriesTable({
                 </h2>
 
                 <p className="mt-1 text-xs text-slate-400">
-                  {(c.total_articles ?? 0)} article
+                  {c.total_articles ?? 0} article
                   {(c.total_articles ?? 0) > 1 ? "s" : ""}
                 </p>
               </div>
@@ -106,19 +106,17 @@ export default function CategoriesTable({
                       <Folder className="h-4 w-4 text-slate-500" />
                     </div>
 
-                    <span className="font-medium text-slate-800">
-                      {c.name}
-                    </span>
+                    <span className="font-medium text-slate-800">{c.name}</span>
                   </div>
                 </td>
 
                 {/* Count */}
                 <td className="px-6 py-4 text-slate-500">
-                  {(c.total_articles ?? 0)} article
+                  {c.total_articles ?? 0} article
                   {(c.total_articles ?? 0) > 1 ? "s" : ""}
                 </td>
 
-                {/* Actions */}
+                {/* btn Actions */}
                 <td className="px-6 py-4">
                   <div className="flex justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                     <button

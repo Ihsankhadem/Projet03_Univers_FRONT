@@ -10,9 +10,7 @@ export default function StatsSection() {
   return (
     <section className="bg-[#0B0F1A] py-20 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-
           {stats.map((stat) => {
             const Icon = stat.icon;
 
@@ -35,9 +33,7 @@ export default function StatsSection() {
               </div>
             );
           })}
-
         </div>
-
       </div>
     </section>
   );

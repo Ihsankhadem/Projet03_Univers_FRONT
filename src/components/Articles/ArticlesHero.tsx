@@ -1,4 +1,3 @@
-
 export default function ArticlesHero() {
   return (
     <div className="relative h-48 overflow-hidden">

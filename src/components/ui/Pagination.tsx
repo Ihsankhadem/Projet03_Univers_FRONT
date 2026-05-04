@@ -45,7 +45,6 @@ export default function ArticlesPagination({
   return (
     <div className="flex justify-center mt-12">
       <div className="flex items-center gap-2 backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl px-3 py-2 shadow-[0_0_30px_rgba(139,92,246,0.08)]">
-
         {/* Previous */}
         <button
           onClick={() => onPage(Math.max(1, page - 1))}
@@ -58,10 +57,7 @@ export default function ArticlesPagination({
         {/* Pages */}
         {getPages().map((p, index) =>
           p === "..." ? (
-            <span
-              key={index}
-              className="px-2 text-slate-500 text-sm"
-            >
+            <span key={index} className="px-2 text-slate-500 text-sm">
               ...
             </span>
           ) : (
@@ -76,7 +72,7 @@ export default function ArticlesPagination({
             >
               {p}
             </button>
-          )
+          ),
         )}
 
         {/* Next */}

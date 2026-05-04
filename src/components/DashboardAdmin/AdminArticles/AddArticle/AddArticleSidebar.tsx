@@ -1,4 +1,3 @@
-
 import { useAuth } from "../../../../Hooks/useAuth";
 import type { Category } from "../../../../types";
 
@@ -30,10 +29,7 @@ export default function AddArticleSidebar({
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
-
-      <h3 className="text-lg font-bold text-slate-800">
-        Informations
-      </h3>
+      <h3 className="text-lg font-bold text-slate-800">Informations</h3>
 
       {/* AUTEUR */}
       <div>
@@ -85,7 +81,6 @@ export default function AddArticleSidebar({
           <option value="suspendu">Suspendu</option>
         </select>
       </div>
-
     </div>
   );
 }

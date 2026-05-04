@@ -11,7 +11,9 @@ const ITEMS_PER_PAGE = 9;
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [spaceArticles, setSpaceArticles] = useState<SpaceflightResponse["results"]>([]);
+  const [spaceArticles, setSpaceArticles] = useState<
+    SpaceflightResponse["results"]
+  >([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,8 +78,8 @@ export default function ArticlesPage() {
     source === "bdd"
       ? merged.filter((a) => a.source === "bdd")
       : source === "space"
-      ? merged.filter((a) => a.source === "space")
-      : merged;
+        ? merged.filter((a) => a.source === "space")
+        : merged;
 
   // Filtre catégorie + recherche + tri
   const filtered = sourceFiltered
@@ -86,18 +88,18 @@ export default function ArticlesPage() {
       search.trim()
         ? a.title.toLowerCase().includes(search.toLowerCase()) ||
           a.author.toLowerCase().includes(search.toLowerCase())
-        : true
+        : true,
     )
     .sort((a, b) =>
       sort === "date"
         ? new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        : b.views - a.views
+        : b.views - a.views,
     );
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice(
     (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
+    page * ITEMS_PER_PAGE,
   );
 
   return (
@@ -105,13 +107,12 @@ export default function ArticlesPage() {
       <ArticlesHero />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-16">
-
         {/* Onglets source */}
         <div className="flex gap-2 mb-6">
           {[
             ["all", "Tous"],
             ["bdd", "Nos articles"],
-            ["space", "Actualités Spatiales"], 
+            ["space", "Actualités Spatiales"],
           ].map(([val, label]) => (
             <button
               key={val}
@@ -144,7 +145,9 @@ export default function ArticlesPage() {
         {loading ? (
           <div className="text-center py-24 text-slate-500">Chargement...</div>
         ) : paginated.length === 0 ? (
-          <div className="text-center py-24 text-slate-500">Aucun article trouvé.</div>
+          <div className="text-center py-24 text-slate-500">
+            Aucun article trouvé.
+          </div>
         ) : (
           <>
             <p className="text-slate-500 text-sm mb-6">
@@ -154,10 +157,13 @@ export default function ArticlesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {paginated.map((article) =>
                 article.source === "space" ? (
-                  <SpaceArticleCard key={`space-${article.id}`} article={article} />
+                  <SpaceArticleCard
+                    key={`space-${article.id}`}
+                    article={article}
+                  />
                 ) : (
                   <ArticleCard key={`bdd-${article.id}`} article={article} />
-                )
+                ),
               )}
             </div>
 

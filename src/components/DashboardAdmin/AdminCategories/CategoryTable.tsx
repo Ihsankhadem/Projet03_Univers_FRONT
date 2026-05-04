@@ -53,9 +53,7 @@ export default function CategoriesTable({
             </div>
 
             <div className="mt-4 flex items-center justify-between">
-              <span className="text-xs text-slate-400">
-                ID #{c.id}
-              </span>
+              <span className="text-xs text-slate-400">ID #{c.id}</span>
 
               <div className="flex gap-1.5">
                 <button
@@ -77,7 +75,7 @@ export default function CategoriesTable({
         ))}
       </div>
 
-      {/* ─── DESKTOP ─── */}
+      {/* ─── pc ─── */}
       <div className="hidden overflow-x-auto sm:block">
         <table className="w-full text-sm">
           <thead>
@@ -101,6 +99,7 @@ export default function CategoriesTable({
                 category={c}
                 openCategory={openCategory}
                 setOpenCategory={setOpenCategory}
+                onEdit={onEdit}
                 onDelete={onDelete}
               />
             ))}
@@ -115,13 +114,14 @@ interface RowProps {
   category: Category;
   openCategory: number | null;
   setOpenCategory: (id: number | null) => void;
+  onEdit?: (category: Category) => void;
   onDelete?: (id: number) => void;
 }
-
 function CategoryRow({
   category,
   openCategory,
   setOpenCategory,
+  onEdit,
   onDelete,
 }: RowProps) {
   const isOpen = openCategory === category.id;
@@ -141,9 +141,7 @@ function CategoryRow({
             <Folder className="h-4 w-4 text-slate-500" />
           </div>
 
-          <span className="block truncate text-sm">
-            {category.name}
-          </span>
+          <span className="block truncate text-sm">{category.name}</span>
         </div>
       </td>
 
@@ -151,20 +149,13 @@ function CategoryRow({
       <td className="px-3.5 py-3">
         <div className="relative">
           <button
-            onClick={() =>
-              setOpenCategory(isOpen ? null : category.id)
-            }
-            className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-3 py-1.5 text-[15px] font-semibold text-violet-700 shadow-sm transition-all duration-200 hover:border-violet-200 hover:bg-violet-50 hover:shadow"
+            onClick={() => setOpenCategory(isOpen ? null : category.id)}
+            className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-3 py-1.5 text-[15px] font-semibold text-violet-700 shadow-sm transition-all duration-200 hover:border-violet-200 hover:bg-violet-50"
           >
-            <span>
-              {(category.total_articles ?? 0).toLocaleString("fr-FR")} article
-              {(category.total_articles ?? 0) > 1 ? "s" : ""}
-            </span>
-
+            {(category.total_articles ?? 0).toLocaleString("fr-FR")} article
+            {(category.total_articles ?? 0) > 1 ? "s" : ""}
             <span
-              className={`text-xs transition-transform duration-200 ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              className={`text-xs transition-transform ${isOpen ? "rotate-180" : ""}`}
             >
               ▼
             </span>
@@ -185,30 +176,35 @@ function CategoryRow({
                     />
                   ))}
                 </div>
-              ) : articles && articles.length > 0 ? (
+              ) : articles?.length ? (
                 <div className="space-y-2">
                   {articles.map((article) => (
                     <div
                       key={article.id}
-                      className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100"
+                      className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
                     >
                       {article.title}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">
-                  Aucun article lié
-                </p>
+                <p className="text-sm text-slate-400">Aucun article lié</p>
               )}
             </div>
           )}
         </div>
       </td>
 
-      {/* Actions */}
       <td className="px-3.5 py-3">
         <div className="flex justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            onClick={() => onEdit?.(category)}
+            className="p-1.5 rounded-lg hover:bg-violet-50 text-slate-400 hover:text-violet-600 transition-colors"
+            title="Modifier"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+
           <button
             onClick={() => onDelete?.(category.id)}
             className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"

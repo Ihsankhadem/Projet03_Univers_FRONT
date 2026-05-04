@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -8,11 +7,19 @@ interface Props {
   backTo?: string; // URL de la page vers laquelle le lien "Retour" doit rediriger, par défaut "/articles"
 }
 
-export default function ArticleHero({ image, title, backTo = "/articles" }: Props) {
+export default function ArticleHero({
+  image,
+  title,
+  backTo = "/articles",
+}: Props) {
   return (
     <div className="relative h-72 md:h-96 overflow-hidden">
       {image ? (
-        <img src={image} alt={title} className="w-full h-full object-cover opacity-50" />
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover opacity-50"
+        />
       ) : (
         <div className="w-full h-full bg-gradient-to-br from-blue-900 to-violet-900" />
       )}

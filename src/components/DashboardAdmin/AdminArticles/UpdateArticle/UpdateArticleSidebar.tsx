@@ -6,9 +6,7 @@ type Props = {
   categories: Category[];
   status: "publié" | "brouillon" | "suspendu";
   setCategoryId: (value: number) => void;
-  setStatus: (
-    value: "publié" | "brouillon" | "suspendu"
-  ) => void;
+  setStatus: (value: "publié" | "brouillon" | "suspendu") => void;
 };
 
 export default function UpdateArticleSidebar({
@@ -21,9 +19,7 @@ export default function UpdateArticleSidebar({
 }: Props) {
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
-      <h3 className="text-lg font-bold text-slate-800">
-        Informations
-      </h3>
+      <h3 className="text-lg font-bold text-slate-800">Informations</h3>
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Auteur
@@ -49,7 +45,7 @@ export default function UpdateArticleSidebar({
           <option value="">Sélectionner</option>
 
           {categories.map((c) => (
-             <option key={c.id} value={c.id}>
+            <option key={c.id} value={c.id}>
               {c.name}
             </option>
           ))}
@@ -64,17 +60,12 @@ export default function UpdateArticleSidebar({
         <select
           value={status}
           onChange={(e) =>
-            setStatus(
-              e.target.value as
-                | "publié"
-                | "brouillon"
-                | "suspendu"
-            )
+            setStatus(e.target.value as "publié" | "brouillon" | "suspendu")
           }
           className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm"
         >
           <option value="publié">Publié</option>
-                    <option value="brouillon">Brouillon</option>
+          <option value="brouillon">Brouillon</option>
           <option value="suspendu">Suspendu</option>
         </select>
       </div>

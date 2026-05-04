@@ -17,7 +17,9 @@ export default function AddArticle() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [status, setStatus] = useState<"publié" | "brouillon" | "suspendu">("brouillon");
+  const [status, setStatus] = useState<"publié" | "brouillon" | "suspendu">(
+    "brouillon",
+  );
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,53 +71,47 @@ export default function AddArticle() {
     );
   }
 
-return (
-  <div className="min-h-screen bg-[#F8F7FF] px-4 py-8">
-    <div className="max-w-6xl mx-auto">
+  return (
+    <div className="min-h-screen bg-[#F8F7FF] px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <AddArticleHeader />
 
-      <AddArticleHeader />
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-6">
+            <div className="xl:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+              <AddArticleForm
+                title={title}
+                content={content}
+                setTitle={setTitle}
+                setContent={setContent}
+              />
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-6">
+            <div className="space-y-6">
+              <AddArticleSidebar
+                categories={categories}
+                categoryId={categoryId}
+                author={user?.name || ""}
+                setCategoryId={setCategoryId}
+                status={status}
+                setStatus={setStatus}
+              />
 
-          <div className="xl:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
-            <AddArticleForm
-              title={title}
-              content={content}
-              setTitle={setTitle}
-              setContent={setContent}
-            />
+              <AddArticleActions onCancel={() => navigate("/dashboard")} />
+            </div>
           </div>
+        </form>
+      </div>
 
-          <div className="space-y-6">
-
-            <AddArticleSidebar
-              categories={categories}
-              categoryId={categoryId}
-              author={user?.name || ""}
-              setCategoryId={setCategoryId}
-              status={status}
-              setStatus={setStatus}
-            />
-
-            <AddArticleActions onCancel={() => navigate("/dashboard")} />
-
-          </div>
-
-        </div>
-      </form>
-
+      <PopConfirm
+        open={confirmOpen}
+        title="Créer l’article"
+        message="Voulez-vous publier cet article ?"
+        confirmLabel="Créer"
+        cancelLabel="Annuler"
+        onConfirm={confirmCreate}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
-
-    <PopConfirm
-      open={confirmOpen}
-      title="Créer l’article"
-      message="Voulez-vous publier cet article ?"
-      confirmLabel="Créer"
-      cancelLabel="Annuler"
-      onConfirm={confirmCreate}
-      onCancel={() => setConfirmOpen(false)}
-    />
-  </div>
-);
+  );
 }
