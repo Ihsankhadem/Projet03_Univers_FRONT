@@ -5,6 +5,7 @@ import type {
   Category,
   CategoryDetail,
   DashboardStats,
+  User,
 } from "../types";
 
 export const dashboardApi = {
@@ -85,5 +86,34 @@ export const dashboardApi = {
 
   deleteCategory: async (id: number): Promise<{ success: boolean }> => {
     return api.delete(`/api/categories/${id}`);
+  },
+
+  // ================= USERS =================
+  getUsers: async (search = ""): Promise<User[]> => {
+    return api.get<User[]>("/api/users", { search });
+  },
+
+  deleteUser: async (id: number): Promise<{ success: boolean }> => {
+    return api.delete(`/api/users/${id}`);
+  },
+
+  createUser: async (data: {
+    name: string;
+    email: string;
+    role: "rédacteur" | "administrateur";
+  }): Promise<{ success: boolean; userId: number }> => {
+    return api.post("/api/users", data);
+  },
+
+  updateUser: async (
+    id: number,
+    data: {
+      name: string;
+      email: string;
+      password?: string;
+      role: "rédacteur" | "administrateur";
+    },
+  ): Promise<{ success: boolean }> => {
+    return api.put(`/api/users/${id}`, data);
   },
 };

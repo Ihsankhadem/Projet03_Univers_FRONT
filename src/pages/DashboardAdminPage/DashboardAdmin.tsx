@@ -130,8 +130,6 @@ export default function DashboardAdmin() {
               <DashboardCard
                 title="Articles"
                 value={stats.articles.total}
-                delta="+8"
-                deltaLabel="ce mois"
                 icon={<FileText className="w-4 h-4" />}
                 accent="purple"
               />
@@ -150,8 +148,6 @@ export default function DashboardAdmin() {
               <DashboardCard
                 title="Utilisateurs"
                 value={stats.users}
-                delta="+132"
-                deltaLabel="nouveaux"
                 icon={<Users className="w-4 h-4" />}
                 accent="blue"
               />

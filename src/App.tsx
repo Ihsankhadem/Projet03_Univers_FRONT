@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/DashboardAdminPage/DashboardAdmin";
 import UpdateArticle from "./pages/DashboardAdminPage/UpdateArticlePage";
 import CategoryPage from "./pages/DashboardAdminPage/CategoryPage";
+import UsersPage from "./pages/DashboardAdminPage/UsersPage";
 
 import AdminRoutes from "./routes/Admin.routes";
 import "./index.css";
@@ -79,6 +80,15 @@ function Layout() {
             element={
               <AdminRoutes>
                 <CategoryPage />
+              </AdminRoutes>
+            }
+          />
+
+          <Route
+            path="/dashboard/users"
+            element={
+              <AdminRoutes>
+                <UsersPage />
               </AdminRoutes>
             }
           />

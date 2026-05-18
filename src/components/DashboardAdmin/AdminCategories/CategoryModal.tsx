@@ -1,3 +1,4 @@
+// DashboardAdmin/AdminCategories/CategoryModal.tsx
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -36,7 +37,6 @@ export default function CategoryModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
-        {/* HEADER */}
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
