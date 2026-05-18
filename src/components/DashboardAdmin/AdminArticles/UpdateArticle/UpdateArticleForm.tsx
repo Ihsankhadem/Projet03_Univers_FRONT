@@ -1,3 +1,5 @@
+
+// DashboardAdmin/UpdateArticle/UpdateArticleForm.tsx
 type Props = {
   title: string;
   content: string;
@@ -5,7 +7,7 @@ type Props = {
   setContent: (value: string) => void;
 };
 
-export default function AddArticleForm({
+export default function UpdateArticleForm({
   title,
   content,
   setTitle,
