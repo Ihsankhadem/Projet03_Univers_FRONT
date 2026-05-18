@@ -1,19 +1,11 @@
-import {
-  createContext,
-  useState,
-  useCallback,
-} from "react";
+import { createContext, useState, useCallback } from "react";
 
 import type { User, AuthContextType } from "../types";
 import { getStoredAuth, isTokenValid } from "../services/auth.utils";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const storedAuth = (() => {
     try {
       const { token, user } = getStoredAuth();

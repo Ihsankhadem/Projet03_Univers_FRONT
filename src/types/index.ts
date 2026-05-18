@@ -1,4 +1,3 @@
-
 // types/index.ts
 
 export interface Article {
@@ -65,7 +64,7 @@ export interface CategoryDetail {
   articles: CategoryArticle[];
 }
 
-export type Tab = "articles" | "categories" | "utilisateurs";
+export type Tab = "articles" | "categories" | "users";
 
 export type DashboardStats = {
   articles: {
@@ -86,8 +85,6 @@ export type PaginatedArticles = {
   totalPages: number;
 };
 
-
-
 // ---------------- AUTH ----------------
 
 export type Role = "rédacteur" | "administrateur";
@@ -97,6 +94,8 @@ export interface User {
   name: string;
   email: string;
   role: Role;
+
+  total_articles?: number;
 }
 
 export interface JwtPayload {

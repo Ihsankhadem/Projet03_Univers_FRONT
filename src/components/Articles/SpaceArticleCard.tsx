@@ -41,11 +41,12 @@ export default function SpaceArticleCard({ article }: Props) {
         )}
         <div className="flex items-center justify-between text-xs text-slate-500 mt-2">
           <span className="flex items-center gap-1">
-            <User className="w-3 h-3" />{article.author}
+            <User className="w-3 h-3" />
+            {article.author}
           </span>
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
-          {/* Affiche la date de création formatée en français */}
+            {/* Affiche la date de création formatée en français */}
             {new Date(article.created_at).toLocaleDateString("fr-FR")}
           </span>
         </div>

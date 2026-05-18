@@ -1,5 +1,4 @@
-
-import { Routes, Route, useLocation} from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
@@ -13,6 +12,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/DashboardAdminPage/DashboardAdmin";
 import UpdateArticle from "./pages/DashboardAdminPage/UpdateArticlePage";
 import CategoryPage from "./pages/DashboardAdminPage/CategoryPage";
+import UsersPage from "./pages/DashboardAdminPage/UsersPage";
 
 import AdminRoutes from "./routes/Admin.routes";
 import "./index.css";
@@ -84,7 +84,14 @@ function Layout() {
             }
           />
 
-
+          <Route
+            path="/dashboard/users"
+            element={
+              <AdminRoutes>
+                <UsersPage />
+              </AdminRoutes>
+            }
+          />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -98,7 +105,3 @@ function Layout() {
 export default function App() {
   return <Layout />;
 }
-
-
-
-

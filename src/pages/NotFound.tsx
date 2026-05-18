@@ -3,17 +3,29 @@ import { Link } from "react-router-dom";
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-[#0B0F1A] flex flex-col items-center justify-center text-center px-6 relative overflow-hidden">
-
       <div className="absolute inset-0 pointer-events-none">
         {[
-          [12,15],[25,70],[40,30],[60,85],[75,20],[88,60],[95,40],
-          [5,50],[50,10],[33,90],[67,45],[80,80],[18,35],[55,65],
+          [12, 15],
+          [25, 70],
+          [40, 30],
+          [60, 85],
+          [75, 20],
+          [88, 60],
+          [95, 40],
+          [5, 50],
+          [50, 10],
+          [33, 90],
+          [67, 45],
+          [80, 80],
+          [18, 35],
+          [55, 65],
         ].map(([x, y], i) => (
           <div
             key={i}
             className="absolute rounded-full bg-white"
             style={{
-              left: `${x}%`, top: `${y}%`,
+              left: `${x}%`,
+              top: `${y}%`,
               width: i % 3 === 0 ? "2px" : "1px",
               height: i % 3 === 0 ? "2px" : "1px",
               opacity: 0.3 + (i % 4) * 0.15,
@@ -31,7 +43,9 @@ export default function NotFound() {
           style={{ width: "200px", height: "48px" }}
         />
         {/* Astronaute perdu */}
-        <div className="absolute -top-4 -right-4 text-4xl animate-bounce">🧑‍🚀</div>
+        <div className="absolute -top-4 -right-4 text-4xl animate-bounce">
+          🧑‍🚀
+        </div>
       </div>
 
       {/* 404 */}

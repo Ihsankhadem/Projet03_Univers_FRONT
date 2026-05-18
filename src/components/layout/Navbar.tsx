@@ -19,9 +19,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-[#0B1120]/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-2 border-b border-slate-800">
-
       <div className="w-full px-6 lg:px-10 flex items-center justify-between h-20">
-
         {/* LEFT — LOGO */}
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} className="w-11 h-11 rounded-full" />
@@ -31,47 +29,42 @@ export default function Navbar() {
         </Link>
 
         {/* CENTER — NAV LINKS */}
-      <div className="hidden md:flex items-center gap-10">
-
-        <NavLink
-          to="/"
-          className="text-slate-300 hover:text-white transition font-semibold"
-        >
-          Accueil
-        </NavLink>
-
-        <NavLink
-          to="/articles"
-          className="text-slate-300 hover:text-white transition font-semibold"
-        >
-          Articles
-        </NavLink>
-
-        <NavLink
-          to="/contact"
-          className="text-slate-300 hover:text-white transition font-semibold"
-        >
-          Contact
-        </NavLink>
-
-        {user?.role === "administrateur" && (
+        <div className="hidden md:flex items-center gap-10">
           <NavLink
-            to="/dashboard"
-            className="text-violet-300 hover:text-violet-200 transition font-semibold"
+            to="/"
+            className="text-slate-300 hover:text-white transition font-semibold"
           >
-            Dashboard
+            Accueil
           </NavLink>
-        )}
 
-      </div>
+          <NavLink
+            to="/articles"
+            className="text-slate-300 hover:text-white transition font-semibold"
+          >
+            Articles
+          </NavLink>
 
+          <NavLink
+            to="/contact"
+            className="text-slate-300 hover:text-white transition font-semibold"
+          >
+            Contact
+          </NavLink>
+
+          {user?.role === "administrateur" && (
+            <NavLink
+              to="/dashboard"
+              className="text-violet-300 hover:text-violet-200 transition font-semibold"
+            >
+              Dashboard
+            </NavLink>
+          )}
+        </div>
 
         {/* RIGHT — USER */}
         <div className="hidden md:flex items-center gap-4">
-
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-
               {/* Avatar */}
               <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-semibold">
                 {avatarLetter}
@@ -80,9 +73,7 @@ export default function Navbar() {
               {/* Name + role */}
               <div className="flex flex-col leading-tight">
                 <span className="text-sm text-slate-200">{user?.name}</span>
-                <span className="text-xs text-violet-400">
-                  {user?.role}
-                </span>
+                <span className="text-xs text-violet-400">{user?.role}</span>
               </div>
 
               {/* Logout */}
@@ -92,7 +83,6 @@ export default function Navbar() {
               >
                 <LogOut className="w-4 h-4" />
               </button>
-
             </div>
           ) : (
             <Link
@@ -102,7 +92,6 @@ export default function Navbar() {
               Connexion
             </Link>
           )}
-
         </div>
 
         {/* MOBILE BUTTON */}
@@ -112,16 +101,13 @@ export default function Navbar() {
         >
           {isMenuOpen ? <X /> : <Menu />}
         </button>
-
       </div>
 
       {/* MOBILE MENU */}
       {isMenuOpen && (
         <div className="md:hidden border-t border-slate-800 px-6 py-5 space-y-4 animate-fade-in">
-
           {isAuthenticated && (
             <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-
               <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-semibold">
                 {avatarLetter}
               </div>
@@ -130,42 +116,62 @@ export default function Navbar() {
                 <p className="text-slate-200 font-medium">{user?.name}</p>
                 <p className="text-xs text-violet-400">{user?.role}</p>
               </div>
-
             </div>
           )}
 
-          <NavLink to="/" onClick={() => setIsMenuOpen(false)} className="block text-slate-300 hover:text-white">
+          <NavLink
+            to="/"
+            onClick={() => setIsMenuOpen(false)}
+            className="block text-slate-300 hover:text-white"
+          >
             Accueil
           </NavLink>
 
-          <NavLink to="/articles" onClick={() => setIsMenuOpen(false)} className="block text-slate-300 hover:text-white">
+          <NavLink
+            to="/articles"
+            onClick={() => setIsMenuOpen(false)}
+            className="block text-slate-300 hover:text-white"
+          >
             Articles
           </NavLink>
 
-          <NavLink to="/contact" onClick={() => setIsMenuOpen(false)} className="block text-slate-300 hover:text-white">
+          <NavLink
+            to="/contact"
+            onClick={() => setIsMenuOpen(false)}
+            className="block text-slate-300 hover:text-white"
+          >
             Contact
           </NavLink>
 
           {user?.role === "administrateur" && (
-            <NavLink to="/dashboard" onClick={() => setIsMenuOpen(false)} className="block text-violet-300">
+            <NavLink
+              to="/dashboard"
+              onClick={() => setIsMenuOpen(false)}
+              className="block text-violet-300"
+            >
               Dashboard
             </NavLink>
           )}
 
           {isAuthenticated ? (
-            <button onClick={handleLogout} className="flex items-center gap-2 text-red-400">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-red-400"
+            >
               <LogOut className="w-4 h-4" />
               Déconnexion
             </button>
           ) : (
-            <Link to="/auth" onClick={() => setIsMenuOpen(false)} className="block text-violet-300">
+            <Link
+              to="/auth"
+              onClick={() => setIsMenuOpen(false)}
+              className="block text-violet-300"
+            >
               Connexion
             </Link>
           )}
-
         </div>
       )}
-
     </nav>
   );
 }

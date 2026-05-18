@@ -1,31 +1,15 @@
-import ContactHero from "../components/Contact/ContactHero";
 import ContactForm from "../components/Contact/ContactForm";
-import ContactInfoCard from "../components/Contact/ContactInfoCard";
-// import HorairesCard from "../components/Contact/HoraireCard";
-
 
 export default function Contact() {
   return (
-    <div className="min-h-screen bg-[#0B0F1A]">
-      <ContactHero />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Colonne gauche */}
-          <div className="flex flex-col gap-4">
-            <ContactInfoCard />
-            {/* <HorairesCard /> */}
-          </div>
-
-          {/* Colonne droite */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
-            <ContactForm />
-
-          </div>
-
-        </div>
+    <main className="relative min-h-screen overflow-hidden bg-[#0B0F1A] px-4 py-12 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-indigo-300/30 blur-[140px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-violet-400/20 blur-[140px]" />
+      <div className="pointer-events-none absolute top-1/2 left-0 h-[320px] w-[320px] -translate-y-1/2 rounded-full bg-blue-300/20 blur-[120px]" />
+      <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(to_right,#4338ca10_1px,transparent_1px),linear-gradient(to_bottom,#4338ca10_1px,transparent_1px)] bg-[size:80px_80px]" />
+      <div className="relative mx-auto max-w-3xl">
+        <ContactForm />
       </div>
-    </div>
+    </main>
   );
 }

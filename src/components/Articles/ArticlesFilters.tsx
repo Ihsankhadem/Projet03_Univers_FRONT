@@ -20,7 +20,6 @@ export default function ArticlesFilters({
 }: Props) {
   return (
     <div className="mb-10">
-
       {/* Recherche */}
       <div className="flex flex-col md:flex-row gap-3 mb-5">
         <div className="relative flex-1">
@@ -36,7 +35,6 @@ export default function ArticlesFilters({
       </div>
 
       <div className="flex flex-wrap gap-2">
-
         <button
           onClick={() => onCat(null)}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${

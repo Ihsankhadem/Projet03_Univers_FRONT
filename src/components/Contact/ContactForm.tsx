@@ -1,17 +1,32 @@
-// src/components/Contact/ContactForm.tsx - formulaire de contact avec gestion d'état local et message de confirmation
 import { useState } from "react";
 import { Send } from "lucide-react";
-// FormState définit la structure de l'état du formulaire , on type les champs
-type FormState = { nom: string; email: string; sujet: string; message: string };
+import astronautImg from "../../assets/astronaut.jpg";
+
+type FormState = {
+  nom: string;
+  email: string;
+  sujet: string;
+  message: string;
+};
 
 export default function ContactForm() {
-  const [form, setForm] = useState<FormState>({ nom: "", email: "", sujet: "", message: "" });
-// sent = true si le message a été envoyé, sinon false
+  const [form, setForm] = useState<FormState>({
+    nom: "",
+    email: "",
+    sujet: "",
+    message: "",
+  });
+
   const [sent, setSent] = useState(false);
-// f = form, e.target.name = nom, email, sujet, message, e.target.value = la valeur de l'input
-// onChange appelle handleChange à chaque changement dans les inputs, qui met à jour l'état du formulaire
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,55 +34,125 @@ export default function ContactForm() {
   };
 
   const inputClass =
-    "w-full bg-[#0B0F1A] border border-slate-600 text-slate-200 placeholder-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-violet-500 transition-colors";
+    "w-full rounded-xl border border-slate-700 bg-white/5 px-4 py-4 text-sm text-white placeholder:text-slate-500 backdrop-blur-md transition-colors focus:outline-none focus:border-indigo-400";
 
   return (
-    <div className="bg-[#1E293B] border border-slate-700 rounded-xl p-6">
-      <h2 className="text-xl font-bold text-slate-100 mb-6">Envoyez-nous un message</h2>
+    <section className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-[36px] border border-white/10 bg-[#0F172A] shadow-2xl">
+      {/* glow background */}
+      <div className="pointer-events-none absolute -top-32 left-10 h-[420px] w-[420px] rounded-full bg-indigo-500/20 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-[380px] w-[380px] rounded-full bg-violet-500/20 blur-[120px]" />
 
-      {sent ? (
-        <div className="text-center py-12">
-          <div className="bg-violet-600/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Send className="w-7 h-7 text-violet-400" />
+      {/* layout */}
+      <div className="relative grid grid-cols-1 md:grid-cols-[0.95fr_1.05fr] min-h-[680px]">
+        {/* LEFT IMAGE */}
+        <div className="relative hidden overflow-hidden border-r border-white/10 md:block">
+          {/* overlay */}
+          <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#0F172A]/10 via-[#0F172A]/30 to-[#0F172A]/75" />
+
+          <img
+            src={astronautImg}
+            alt="Astronaute"
+            className="h-full w-full object-cover"
+          />
+
+          {/* top text */}
+          <div className="absolute top-10 left-10 z-20 max-w-sm">
+            <p className="mb-3 text-xs uppercase tracking-[0.35em] text-indigo-300">
+              Univers
+            </p>
+
+            <h2 className="text-4xl font-bold leading-tight text-white">
+              Restons en contact.
+            </h2>
+
+            <p className="mt-4 text-sm leading-6 text-slate-300">
+              Une question, une idée ou un projet à partager ? Écrivez-nous.
+            </p>
           </div>
-          <p className="text-slate-100 font-semibold text-lg mb-1">Message envoyé !</p>
-          <p className="text-slate-400 text-sm">Nous vous répondrons dans les plus brefs délais.</p>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-slate-300 mb-1.5">Nom complet *</label>
-              <input name="nom" value={form.nom} onChange={handleChange}
-                placeholder="nom" required className={inputClass} />
-            </div>
-            <div>
-              <label className="block text-sm text-slate-300 mb-1.5">Email *</label>
-              <input name="email" type="email" value={form.email} onChange={handleChange}
-                placeholder="emailt@gmail.com" required className={inputClass} />
-            </div>
+
+        <div className="relative flex items-center bg-[#111827]/90 p-8 sm:p-12">
+          <div className="absolute left-0 top-0 h-full w-px bg-white/10" />
+
+          <div className="w-full">
+            {sent ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-indigo-500/10">
+                  <Send className="h-5 w-5 text-indigo-400" />
+                </div>
+
+                <h3 className="text-2xl font-semibold text-white">
+                  Message envoyé
+                </h3>
+
+                <p className="mt-2 text-sm text-slate-400">
+                  Nous vous répondrons rapidement.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-10 border-b border-white/10 pb-6">
+                  <h2 className="text-4xl font-bold text-white">Contact</h2>
+
+                  <p className="mt-2 text-sm text-slate-400">
+                    Nous serions ravis d’échanger avec vous.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <input
+                    type="text"
+                    name="nom"
+                    value={form.nom}
+                    onChange={handleChange}
+                    placeholder="Nom"
+                    required
+                    className={inputClass}
+                  />
+
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                    required
+                    className={inputClass}
+                  />
+
+                  <input
+                    type="text"
+                    name="sujet"
+                    value={form.sujet}
+                    onChange={handleChange}
+                    placeholder="Sujet"
+                    required
+                    className={inputClass}
+                  />
+
+                  <textarea
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
+                    placeholder="Message"
+                    rows={5}
+                    required
+                    className={`${inputClass} resize-none`}
+                  />
+
+                  <button
+                    type="submit"
+                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-gradient-to-r from-indigo-500 via-violet-500 to-blue-500 py-3 font-semibold text-white transition hover:opacity-90"
+                  >
+                    <Send className="h-4 w-4" />
+                    Envoyer
+                  </button>
+                </form>
+              </>
+            )}
           </div>
-          <div>
-            <label className="block text-sm text-slate-300 mb-1.5">Sujet *</label>
-            <input name="sujet" value={form.sujet} onChange={handleChange}
-              placeholder="Comment puis-je vous aider ?" required className={inputClass} />
-          </div>
-          <div>
-            <label className="block text-sm text-slate-300 mb-1.5">Message *</label>
-            <textarea name="message" value={form.message} onChange={handleChange}
-              placeholder="Écrivez votre message ici..." required rows={6}
-              className={`${inputClass} resize-none`} />
-          </div>
-          <button type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 rounded-lg transition-colors">
-            <Send className="w-4 h-4" />
-            Envoyer le message
-          </button>
-        </form>
-      )}
-    </div>
+        </div>
+      </div>
+    </section>
   );
 }
-
-
-

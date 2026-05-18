@@ -2,7 +2,6 @@ import { jwtDecode } from "jwt-decode";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../Hooks/useAuth";
 
-
 interface TokenPayload {
   id: number;
   role: "rédacteur" | "administrateur";
@@ -30,7 +29,7 @@ export default function AdminRoutes({
   try {
     const payload = jwtDecode<TokenPayload>(token);
 
-    const currentTime = new Date().getTime(); 
+    const currentTime = new Date().getTime();
 
     isExpired = payload.exp ? payload.exp * 1000 < currentTime : false;
     isAdmin = payload.role === "administrateur";

@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Eye, User } from "lucide-react";
 import type { Article } from "../../types";
@@ -10,7 +9,8 @@ interface Props {
 
 export default function ArticleCard({ article }: Props) {
   return (
-    <Link to={`/articles/${article.id}`}
+    <Link
+      to={`/articles/${article.id}`}
       className="group block rounded-xl overflow-hidden border border-slate-700 hover:border-violet-500 transition-all bg-[#1E293B] hover:shadow-lg hover:shadow-violet-900/20"
     >
       <div className="relative h-44 bg-slate-800 overflow-hidden">
@@ -18,7 +18,7 @@ export default function ArticleCard({ article }: Props) {
           <img
             src={article.image}
             alt={article.title}
-          // lazy loading pour les images, ça permet de ne pas charger les images qui ne sont pas encore visibles à l'écran = améliore les performances de l'application
+            // lazy loading pour les images, ça permet de ne pas charger les images qui ne sont pas encore visibles à l'écran = améliore les performances de l'application
             loading="lazy"
             width={400}
             height={176}
@@ -41,8 +41,14 @@ export default function ArticleCard({ article }: Props) {
           {article.title}
         </h3>
         <div className="flex items-center justify-between text-xs text-slate-500 mt-3">
-          <span className="flex items-center gap-1"><User className="w-3 h-3" />{article.author}</span>
-          <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{article.views}</span>
+          <span className="flex items-center gap-1">
+            <User className="w-3 h-3" />
+            {article.author}
+          </span>
+          <span className="flex items-center gap-1">
+            <Eye className="w-3 h-3" />
+            {article.views}
+          </span>
         </div>
       </div>
     </Link>

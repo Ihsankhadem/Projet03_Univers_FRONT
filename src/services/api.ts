@@ -13,12 +13,12 @@ const buildUrl = (path: string, params?: QueryParams): string => {
 
   const clean = Object.fromEntries(
     Object.entries(params).filter(
-      ([, v]) => v !== null && v !== undefined && v !== ""
-    )
+      ([, v]) => v !== null && v !== undefined && v !== "",
+    ),
   );
 
   const query = new URLSearchParams(
-    Object.entries(clean).map(([k, v]) => [k, String(v)])
+    Object.entries(clean).map(([k, v]) => [k, String(v)]),
   ).toString();
 
   return query ? `${path}?${query}` : path;
@@ -26,7 +26,7 @@ const buildUrl = (path: string, params?: QueryParams): string => {
 
 const request = async <T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> => {
   const res = await fetch(`${API}${path}`, {
     ...options,
@@ -71,6 +71,5 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
-  delete: <T>(path: string) =>
-    request<T>(path, { method: "DELETE" }),
+  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };

@@ -48,9 +48,7 @@ export default function DashboardCard({
         <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">
           {title}
         </p>
-        <div className={`p-2 rounded-xl ${colors.icon}`}>
-          {icon}
-        </div>
+        <div className={`p-2 rounded-xl ${colors.icon}`}>{icon}</div>
       </div>
 
       <p className="text-3xl font-semibold text-slate-800 leading-none tabular-nums">
