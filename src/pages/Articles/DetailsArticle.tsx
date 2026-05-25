@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { api } from "../services/api";
-import ArticleHero from "../components/Articles/Details/ArticleHero";
-import ArticleMeta from "../components/Articles/Details/ArticleMeta";
-import ArticleContent from "../components/Articles/Details/ArticleContent";
-import RelatedArticles from "../components/Articles/Details/RelatedArticles";
-import type { Article } from "../types";
+import { api } from "../../services/api";
+import ArticleHero from "../../components/Articles/Details/ArticleHero";
+import ArticleMeta from "../../components/Articles/Details/ArticleMeta";
+import ArticleContent from "../../components/Articles/Details/ArticleContent";
+import RelatedArticles from "../../components/Articles/Details/RelatedArticles";
+import type { Article } from "../../types";
 
 export default function DetailsArticle() {
   const { id } = useParams();

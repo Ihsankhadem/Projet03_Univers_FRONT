@@ -1,3 +1,5 @@
+// components/DashboardAdmin/AdminArticles/AddArticle/AddArticleSidebar.tsx
+
 import { useAuth } from "../../../../Hooks/useAuth";
 import type { Category } from "../../../../types";
 
@@ -7,9 +9,14 @@ interface Props {
   categories: Category[];
   categoryId: number | null;
   setCategoryId: (id: number) => void;
+
   author: string;
+
   status: Status;
   setStatus: (status: Status) => void;
+
+  image: string;
+  setImage: (image: string) => void;
 }
 
 export default function AddArticleSidebar({
@@ -17,19 +24,67 @@ export default function AddArticleSidebar({
   categoryId,
   setCategoryId,
   status,
+  image,
+  setImage,
   setStatus,
   author,
 }: Props) {
-  useAuth(); // 👈 évite erreur "user unused" sans changer ton design
+  useAuth();
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as Status;
     setStatus(value);
   };
 
+const uploadImage = async (file: File) => {
+  const formData = new FormData();
+
+  formData.append("file", file);
+  formData.append("upload_preset", "univers");
+
+  try {
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    const data = await res.json();
+
+    setImage(data.secure_url);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
       <h3 className="text-lg font-bold text-slate-800">Informations</h3>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-2">
+          Image
+        </label>
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+
+            if (!file) return;
+
+            uploadImage(file);
+          }}
+          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm"
+        />
+
+        {image && (
+          <img src={image} className="mt-3 w-full rounded-2xl object-cover" />
+        )}
+      </div>
 
       {/* AUTEUR */}
       <div>
@@ -84,3 +139,4 @@ export default function AddArticleSidebar({
     </div>
   );
 }
+

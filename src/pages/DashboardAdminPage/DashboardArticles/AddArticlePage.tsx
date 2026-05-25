@@ -1,29 +1,33 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAuth } from "../../Hooks/useAuth";
-import { dashboardApi } from "../../services/dashboardApi";
-import PopConfirm from "../../components/ui/PopConfirming";
+import { useAuth } from "../../../Hooks/useAuth";
+import { dashboardApi } from "../../../services/dashboardApi";
+import PopConfirm from "../../../components/ui/PopConfirming";
 
-import AddArticleHeader from "../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleHeader";
-import AddArticleForm from "../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleForm";
-import AddArticleSidebar from "../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleSidebar";
-import AddArticleActions from "../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleActions";
-import { Category } from "../../types";
+import AddArticleHeader from "../../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleHeader";
+import AddArticleForm from "../../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleForm";
+import AddArticleSidebar from "../../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleSidebar";
+import AddArticleActions from "../../../components/DashboardAdmin/AdminArticles/AddArticle/AddArticleActions";
+
+import { Category } from "../../../types";
 
 export default function AddArticle() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState("");
+
   const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [status, setStatus] = useState<"publié" | "brouillon" | "suspendu">(
-    "brouillon",
-  );
+
+  const [status, setStatus] = useState<
+    "publié" | "brouillon" | "suspendu"
+  >("brouillon");
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -51,6 +55,7 @@ export default function AddArticle() {
     const result = await dashboardApi.createArticle({
       title,
       content,
+      image,
       category_id: categoryId,
       status,
       author_id: user.id,
@@ -66,7 +71,7 @@ export default function AddArticle() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-slate-500 bg-white">
-        Chargement…
+        Chargement...
       </div>
     );
   }
@@ -92,12 +97,16 @@ export default function AddArticle() {
                 categories={categories}
                 categoryId={categoryId}
                 author={user?.name || ""}
-                setCategoryId={setCategoryId}
                 status={status}
+                image={image}
+                setImage={setImage}
+                setCategoryId={setCategoryId}
                 setStatus={setStatus}
               />
 
-              <AddArticleActions onCancel={() => navigate("/dashboard")} />
+              <AddArticleActions
+                onCancel={() => navigate("/dashboard")}
+              />
             </div>
           </div>
         </form>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
-import { api } from "../services/api";
-import ArticleHero from "../components/Articles/Details/ArticleHero";
-import ArticleMeta from "../components/Articles/Details/ArticleMeta";
-import ArticleContent from "../components/Articles/Details/ArticleContent";
-import type { SpaceArticle, Article } from "../types";
-import SpaceArticleCard from "../components/Articles/SpaceArticleCard";
+import { api } from "../../services/api";
+import ArticleHero from "../../components/Articles/Details/ArticleHero";
+import ArticleMeta from "../../components/Articles/Details/ArticleMeta";
+import ArticleContent from "../../components/Articles/Details/ArticleContent";
+import type { SpaceArticle, Article } from "../../types";
+import SpaceArticleCard from "../../components/Articles/SpaceArticleCard";
 
 const toArticle = (s: SpaceArticle): Article => ({
   id: s.id,

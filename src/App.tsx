@@ -3,20 +3,22 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
 import Home from "./pages/Home";
-import ArticlesPage from "./pages/ArticlesPage";
-import DetailsArticle from "./pages/DetailsArticle";
-import DetailsSpaceArticle from "./pages/DetailsSpaceArticle";
+import ArticlesPage from "./pages/Articles/ArticlesPage";
+import DetailsArticle from "./pages/Articles/DetailsArticle";
+import DetailsSpaceArticle from "./pages/Articles/DetailsSpaceArticle";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
-import Dashboard from "./pages/DashboardAdminPage/DashboardAdmin";
-import UpdateArticle from "./pages/DashboardAdminPage/UpdateArticlePage";
+import Dashboard from "./pages/DashboardAdminPage/DashboardArticles/DashboardAdmin";
+import UpdateArticle from "./pages/DashboardAdminPage/DashboardArticles/UpdateArticlePage";
 import CategoryPage from "./pages/DashboardAdminPage/CategoryPage";
 import UsersPage from "./pages/DashboardAdminPage/UsersPage";
+import AdminEvents from "./pages/DashboardAdminPage/EventsPage";
+import AddArticle from "./pages/DashboardAdminPage/DashboardArticles/AddArticlePage";
+import GalleryPage from "./pages/GalleryPage";
 
 import AdminRoutes from "./routes/Admin.routes";
 import "./index.css";
-import AddArticle from "./pages/DashboardAdminPage/AddArticlePage";
 
 const AUTH_ROUTES = ["/auth"];
 
@@ -35,9 +37,9 @@ function Layout() {
           <Route path="/articles/:id" element={<DetailsArticle />} />
           <Route path="/nasa/:id" element={<DetailsSpaceArticle />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/auth" element={<Auth />} />
 
-          {/* DASHBOARD */}
           <Route
             path="/dashboard"
             element={
@@ -46,7 +48,6 @@ function Layout() {
               </AdminRoutes>
             }
           />
-
           <Route
             path="/dashboard/articles/add"
             element={
@@ -55,7 +56,6 @@ function Layout() {
               </AdminRoutes>
             }
           />
-
           <Route
             path="/dashboard/articles/:id/edit"
             element={
@@ -65,7 +65,6 @@ function Layout() {
             }
           />
 
-          {/* CATEGORIES */}
           <Route
             path="/categories"
             element={
@@ -74,7 +73,6 @@ function Layout() {
               </AdminRoutes>
             }
           />
-
           <Route
             path="/categories/:id"
             element={
@@ -89,6 +87,15 @@ function Layout() {
             element={
               <AdminRoutes>
                 <UsersPage />
+              </AdminRoutes>
+            }
+          />
+
+          <Route
+            path="/dashboard/events"
+            element={
+              <AdminRoutes>
+                <AdminEvents />
               </AdminRoutes>
             }
           />

@@ -6,6 +6,7 @@ import type {
   CategoryDetail,
   DashboardStats,
   User,
+  Evenement,
 } from "../types";
 
 export const dashboardApi = {
@@ -26,6 +27,7 @@ export const dashboardApi = {
   createArticle: async (data: {
     title: string;
     content: string;
+    image: string;
     status: "publié" | "brouillon" | "suspendu";
     author_id: number;
     category_id: number;
@@ -39,6 +41,7 @@ export const dashboardApi = {
       title: string;
       content: string;
       status: "publié" | "brouillon" | "suspendu";
+      image: string;
       category_id: number;
     },
   ): Promise<{ success: boolean }> => {
@@ -61,6 +64,14 @@ export const dashboardApi = {
   // ================= CATEGORIES =================
   getCategories: async (search = ""): Promise<Category[]> => {
     return api.get<Category[]>("/api/categories", { search });
+  },
+
+  getCategoryStats: async (): Promise<{
+    total_categories: number;
+    total_articles: number;
+    empty_categories: number;
+  }> => {
+    return api.get("/api/categories/stats");
   },
 
   getCategoryById: async (id: number): Promise<CategoryDetail> => {
@@ -89,6 +100,7 @@ export const dashboardApi = {
   },
 
   // ================= USERS =================
+
   getUsers: async (search = ""): Promise<User[]> => {
     return api.get<User[]>("/api/users", { search });
   },
@@ -115,5 +127,37 @@ export const dashboardApi = {
     },
   ): Promise<{ success: boolean }> => {
     return api.put(`/api/users/${id}`, data);
+  },
+
+  getUserStats: async (): Promise<{
+    total_users: number;
+    total_admins: number;
+    total_editors: number;
+    total_articles: number;
+  }> => {
+    return api.get("/api/users/stats");
+  },
+
+  // ================= EVENTS =================
+
+  getEvents: async (search = ""): Promise<Evenement[]> => {
+    return api.get<Evenement[]>("/api/events", { search });
+  },
+
+  createEvent: async (
+    data: Omit<Evenement, "id">,
+  ): Promise<{ success: boolean; id: number }> => {
+    return api.post("/api/events", data);
+  },
+
+  updateEvent: async (
+    id: number,
+    data: Omit<Evenement, "id">,
+  ): Promise<{ success: boolean }> => {
+    return api.put(`/api/events/${id}`, data);
+  },
+
+  deleteEvent: async (id: number): Promise<{ success: boolean }> => {
+    return api.delete(`/api/events/${id}`);
   },
 };

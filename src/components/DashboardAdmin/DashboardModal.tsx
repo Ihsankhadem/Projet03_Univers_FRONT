@@ -1,4 +1,4 @@
-// src/components/DashboardAdmin/shared/DashboardModal.tsx
+// src/components/DashboardAdmin/DashboardModal.tsx
 
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
