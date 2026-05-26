@@ -11,6 +11,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "articles", label: "Articles" },
   { id: "categories", label: "Catégories" },
   { id: "utilisateurs", label: "Utilisateurs" },
+  { id: "événements", label: "Événements" },
 ];
 
 export default function DashboardTabs({ activeTab, setActiveTab }: Props) {
@@ -30,6 +31,10 @@ export default function DashboardTabs({ activeTab, setActiveTab }: Props) {
 
       case "utilisateurs":
         navigate("/dashboard/users");
+        break;
+
+      case "événements":
+        navigate("/dashboard/events");
         break;
 
       default:

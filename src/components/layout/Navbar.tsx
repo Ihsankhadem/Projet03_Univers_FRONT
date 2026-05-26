@@ -27,34 +27,72 @@ export default function Navbar() {
             Blog de l<span className="text-violet-400">'Univers</span>
           </span>
         </Link>
-
         {/* CENTER — NAV LINKS */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-8">
           <NavLink
             to="/"
-            className="text-slate-300 hover:text-white transition font-semibold"
+            className={({ isActive }) =>
+              `pb-1 border-b-2 transition-all duration-200 font-medium ${
+                isActive
+                  ? "text-white border-white"
+                  : "text-slate-400 border-transparent hover:text-slate-100"
+              }`
+            }
           >
             Accueil
           </NavLink>
 
           <NavLink
             to="/articles"
-            className="text-slate-300 hover:text-white transition font-semibold"
+            className={({ isActive }) =>
+              `pb-1 border-b-2 transition-all duration-200 font-medium ${
+                isActive
+                  ? "text-white border-white"
+                  : "text-slate-400 border-transparent hover:text-slate-100"
+              }`
+            }
           >
             Articles
           </NavLink>
 
           <NavLink
-            to="/contact"
-            className="text-slate-300 hover:text-white transition font-semibold"
+            to="/gallery"
+            className={({ isActive }) =>
+              `pb-1 border-b-2 transition-all duration-200 font-medium ${
+                isActive
+                  ? "text-white border-white"
+                  : "text-slate-400 border-transparent hover:text-slate-100"
+              }`
+            }
           >
-            Contact
+            Galerie
           </NavLink>
+
+          {!isAuthenticated && (
+            <NavLink
+              to="/contact"
+              className={({ isActive }) =>
+                `pb-1 border-b-2 transition-all duration-200 font-medium ${
+                  isActive
+                    ? "text-white border-white"
+                    : "text-slate-400 border-transparent hover:text-slate-100"
+                }`
+              }
+            >
+              Contact
+            </NavLink>
+          )}
 
           {user?.role === "administrateur" && (
             <NavLink
               to="/dashboard"
-              className="text-violet-300 hover:text-violet-200 transition font-semibold"
+              className={({ isActive }) =>
+                `px-5 py-2 rounded-xl border transition-all duration-200 font-semibold ${
+                  isActive
+                    ? "bg-white text-slate-900 border-white"
+                    : "bg-slate-800/70 text-slate-100 border-slate-700 hover:bg-slate-700"
+                }`
+              }
             >
               Dashboard
             </NavLink>
@@ -87,7 +125,11 @@ export default function Navbar() {
           ) : (
             <Link
               to="/auth"
-              className="px-5 py-2 rounded-full border border-violet-400 text-violet-300 hover:bg-violet-600 hover:text-white transition"
+              className="px-5 py-2 rounded-full font-semibold
+             bg-gradient-to-r from-violet-600 to-indigo-600
+             text-white shadow-md
+             hover:shadow-lg hover:from-violet-500 hover:to-indigo-500
+             transition-all duration-200"
             >
               Connexion
             </Link>
@@ -105,58 +147,100 @@ export default function Navbar() {
 
       {/* MOBILE MENU */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-slate-800 px-6 py-5 space-y-4 animate-fade-in">
+        <div className="md:hidden border-t border-slate-800 px-6 py-5 space-y-5 bg-[#0B1120]">
           {isAuthenticated && (
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+            <div className="flex items-center gap-3 pb-5 border-b border-slate-800">
               <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-semibold">
                 {avatarLetter}
               </div>
 
               <div>
-                <p className="text-slate-200 font-medium">{user?.name}</p>
-                <p className="text-xs text-violet-400">{user?.role}</p>
+                <p className="text-slate-100 font-medium">{user?.name}</p>
+                <p className="text-xs text-slate-400">{user?.role}</p>
               </div>
             </div>
           )}
 
-          <NavLink
-            to="/"
-            onClick={() => setIsMenuOpen(false)}
-            className="block text-slate-300 hover:text-white"
-          >
-            Accueil
-          </NavLink>
-
-          <NavLink
-            to="/articles"
-            onClick={() => setIsMenuOpen(false)}
-            className="block text-slate-300 hover:text-white"
-          >
-            Articles
-          </NavLink>
-
-          <NavLink
-            to="/contact"
-            onClick={() => setIsMenuOpen(false)}
-            className="block text-slate-300 hover:text-white"
-          >
-            Contact
-          </NavLink>
-
-          {user?.role === "administrateur" && (
+          <div className="flex flex-col gap-2">
             <NavLink
-              to="/dashboard"
+              to="/"
               onClick={() => setIsMenuOpen(false)}
-              className="block text-violet-300"
+              className={({ isActive }) =>
+                `px-4 py-3 rounded-xl transition font-medium ${
+                  isActive
+                    ? "bg-white text-slate-900"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`
+              }
             >
-              Dashboard
+              Accueil
             </NavLink>
-          )}
+
+            <NavLink
+              to="/articles"
+              onClick={() => setIsMenuOpen(false)}
+              className={({ isActive }) =>
+                `px-4 py-3 rounded-xl transition font-medium ${
+                  isActive
+                    ? "bg-white text-slate-900"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`
+              }
+            >
+              Articles
+            </NavLink>
+
+            <NavLink
+              to="/gallery"
+              onClick={() => setIsMenuOpen(false)}
+              className={({ isActive }) =>
+                `px-4 py-3 rounded-xl transition font-medium ${
+                  isActive
+                    ? "bg-white text-slate-900"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`
+              }
+            >
+              Galerie
+            </NavLink>
+
+            {!isAuthenticated && (
+              <NavLink
+                to="/contact"
+                onClick={() => setIsMenuOpen(false)}
+                className={({ isActive }) =>
+                  `px-4 py-3 rounded-xl transition font-medium ${
+                    isActive
+                      ? "bg-white text-slate-900"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`
+                }
+              >
+                Contact
+              </NavLink>
+            )}
+
+            {user?.role === "administrateur" && (
+              <NavLink
+                to="/dashboard"
+                onClick={() => setIsMenuOpen(false)}
+                className={({ isActive }) =>
+                  `px-4 py-3 rounded-xl border transition font-semibold ${
+                    isActive
+                      ? "bg-white text-slate-900 border-white"
+                      : "bg-slate-800 text-slate-100 border-slate-700"
+                  }`
+                }
+              >
+                Dashboard
+              </NavLink>
+            )}
+          </div>
 
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-red-400"
+              className="flex items-center gap-2 text-red-400 pt-4"
             >
               <LogOut className="w-4 h-4" />
               Déconnexion
@@ -165,7 +249,7 @@ export default function Navbar() {
             <Link
               to="/auth"
               onClick={() => setIsMenuOpen(false)}
-              className="block text-violet-300"
+              className="block pt-4 text-slate-300"
             >
               Connexion
             </Link>

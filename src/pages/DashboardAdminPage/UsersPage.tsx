@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Folder, FileText, Layers3 } from "lucide-react";
+import { Folder, FileText, Layers3, Users } from "lucide-react";
 import UsersTable from "../../components/DashboardAdmin/AdminUsers/UsersTable";
 import DashboardTabs from "../../components/DashboardAdmin/DashboardTabs";
 import DashboardSearch from "../../components/DashboardAdmin/DashboardSearch";
@@ -9,10 +9,11 @@ import DashboardCard from "../../components/DashboardAdmin/DashboardCard";
 import DashboardModal from "../../components/DashboardAdmin/DashboardModal";
 import ArticlesPagination from "../../components/ui/Pagination";
 import { dashboardApi } from "../../services/dashboardApi";
-import type { Tab, User } from "../../types";
+import type { Tab, User, UserStats } from "../../types";
+import DashboardSection from "../../components/DashboardAdmin/DashboardSection";
 
 export default function UsersPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("users");
+  const [activeTab, setActiveTab] = useState<Tab>("utilisateurs");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [openForm, setOpenForm] = useState(false);
@@ -24,7 +25,7 @@ export default function UsersPage() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"rédacteur" | "administrateur">("rédacteur");
 
-  const limit = 6;
+  const limit = 5;
   const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery<User[]>({
@@ -68,11 +69,11 @@ export default function UsersPage() {
   const totalPages = Math.ceil(filteredUsers.length / limit);
   const paginatedUsers = filteredUsers.slice((page - 1) * limit, page * limit);
 
-  const totalUsers = allUsers.length;
-  const totalArticles = allUsers.reduce(
-    (a, u) => a + (u.total_articles ?? 0),
-    0,
-  );
+  const { data: stats, isLoading: loadingStats } = useQuery<UserStats>({
+    queryKey: ["user-stats"],
+    queryFn: dashboardApi.getUserStats,
+    staleTime: 1000 * 60 * 5,
+  });
 
   return (
     <div className="min-h-screen bg-[#F8F7FF]">
@@ -83,99 +84,107 @@ export default function UsersPage() {
           Vue d’ensemble
         </h2>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <DashboardCard
-            title="Utilisateurs"
-            value={totalUsers}
-            icon={<Folder className="h-4 w-4" />}
-            accent="blue"
-          />
-          <DashboardCard
-            title="Articles publiés"
-            value={totalArticles}
-            icon={<FileText className="h-4 w-4" />}
-            accent="green"
-          />
-          <DashboardCard
-            title="Organisation"
-            value={totalUsers}
-            icon={<Layers3 className="h-4 w-4" />}
-            accent="purple"
-          />
-        </div>
-      </div>
-
-      <div className="mt-10 px-16 pb-20">
-        <div className="rounded-2xl border border-[#E2E8F0] bg-[rgba(255,255,255,0.6)] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="w-full max-w-md">
-              <DashboardSearch
-                value={search}
-                onChange={(v) => {
-                  setSearch(v);
-                  setPage(1);
-                }}
+        {loadingStats ? (
+          <div className="flex flex-wrap justify-center gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-24 w-[260px] animate-pulse rounded-2xl bg-white/60 backdrop-blur-md border border-white/40"
               />
-            </div>
-
-            <button
-              onClick={() => {
-                setEditingUser(null);
-                setName("");
-                setEmail("");
-                setRole("rédacteur");
-                setOpenForm(true);
-              }}
-              className="flex items-center gap-2 rounded-xl bg-violet-600/90 px-3 py-2 font-medium text-white shadow-lg shadow-violet-500/20 hover:scale-[1.02] hover:bg-violet-500"
-            >
-              + Ajouter un utilisateur
-            </button>
-
-            <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            ))}
           </div>
+        ) : stats ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <DashboardCard
+              title="Utilisateurs"
+              value={stats.total_users}
+              icon={<Folder className="h-4 w-4" />}
+              accent="blue"
+            />
 
-          <div className="mt-6">
-            {isLoading ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-16 animate-pulse rounded-xl bg-white"
-                  />
-                ))}
-              </div>
-            ) : paginatedUsers.length === 0 ? (
-              <div className="py-10 text-center text-slate-500">
-                Aucun utilisateur trouvé.
-              </div>
-            ) : (
-              <UsersTable
-                users={paginatedUsers}
-                onEdit={(user) => {
-                  setEditingUser(user);
-                  setName(user.name);
-                  setEmail(user.email);
-                  setRole(user.role);
-                  setOpenForm(true);
-                }}
-                onDelete={(id) => {
-                  setUserToDelete(allUsers.find((u) => u.id === id) || null);
-                  setOpenDelete(true);
-                }}
-              />
-            )}
-          </div>
+            <DashboardCard
+              title="Articles publiés"
+              value={stats.total_articles}
+              icon={<FileText className="h-4 w-4" />}
+              accent="green"
+            />
 
-          <div className="mt-10">
-            <ArticlesPagination
-              page={page}
-              totalPages={totalPages}
-              onPage={setPage}
+            <DashboardCard
+              title="Administrateurs"
+              value={stats.total_admins}
+              icon={<Layers3 className="h-4 w-4" />}
+              accent="purple"
+            />
+
+            <DashboardCard
+              title="Rédacteurs"
+              value={stats.total_editors}
+              icon={<Users className="h-4 w-4" />}
+              accent="amber"
             />
           </div>
-        </div>
+        ) : (
+          <div className="text-center text-slate-500 py-6">
+            Impossible de charger les statistiques.
+          </div>
+        )}
       </div>
 
+      <DashboardSection
+        search={
+          <DashboardSearch
+            value={search}
+            onChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+          />
+        }
+        action={
+          <button
+            onClick={() => {
+              setEditingUser(null);
+              setName("");
+              setEmail("");
+              setRole("rédacteur");
+              setOpenForm(true);
+            }}
+            className="flex items-center gap-2 rounded-xl bg-violet-600/90 px-3 py-2 font-medium text-white shadow-lg shadow-violet-500/20 hover:scale-[1.02] hover:bg-violet-500"
+          >
+            + Ajouter un utilisateur
+          </button>
+        }
+        tabs={
+          <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        }
+        loading={isLoading}
+        isEmpty={paginatedUsers.length === 0}
+        emptyMessage="Aucun utilisateur trouvé."
+        pagination={
+          <ArticlesPagination
+            page={page}
+            totalPages={totalPages}
+            onPage={setPage}
+          />
+        }
+      >
+        <UsersTable
+          users={paginatedUsers}
+          onEdit={(user) => {
+            setEditingUser(user);
+            setName(user.name);
+            setEmail(user.email);
+            setRole(user.role);
+            setOpenForm(true);
+          }}
+          onDelete={(id) => {
+            setUserToDelete(allUsers.find((u) => u.id === id) || null);
+            setOpenDelete(true);
+          }}
+        />
+      </DashboardSection>
+
+      {/* ================= CREATE / UPDATE MODAL ================= */}
       <DashboardModal
         open={openForm}
         title={editingUser ? "Modifier l'utilisateur" : "Créer un utilisateur"}
@@ -203,16 +212,20 @@ export default function UsersPage() {
             onChange={(e) => setName(e.target.value)}
             placeholder="Nom"
           />
+
           <input
             className="w-full rounded-xl border p-3"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
           />
+
           <select
             className="w-full rounded-xl border p-3"
             value={role}
-            onChange={(e) => setRole(e.target.value as "rédacteur" | "administrateur")}
+            onChange={(e) =>
+              setRole(e.target.value as "rédacteur" | "administrateur")
+            }
           >
             <option value="rédacteur">Rédacteur</option>
             <option value="administrateur">Administrateur</option>
@@ -220,6 +233,7 @@ export default function UsersPage() {
         </div>
       </DashboardModal>
 
+      {/* ================= DELETE MODAL ================= */}
       <DashboardModal
         open={openDelete}
         title="Supprimer l'utilisateur"
@@ -231,7 +245,11 @@ export default function UsersPage() {
           setOpenDelete(false);
           setUserToDelete(null);
         }}
-        onConfirm={() => userToDelete && deleteMutation.mutate(userToDelete.id)}
+        onConfirm={() => {
+          if (userToDelete) {
+            deleteMutation.mutate(userToDelete.id);
+          }
+        }}
       >
         <p className="text-sm text-slate-500">
           Cet utilisateur sera supprimé définitivement.

@@ -1,16 +1,11 @@
-// src/components/DashboardAdmin/shared/DashboardFormField.tsx
+// src/components/DashboardAdmin/DashboardFormField.tsx
 
 interface Props {
   label: string;
-
   value: string;
-
   onChange: (value: string) => void;
-
   placeholder?: string;
-
   textarea?: boolean;
-
   type?: string;
 }
 

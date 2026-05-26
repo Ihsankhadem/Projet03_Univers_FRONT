@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { dashboardApi } from "../../services/dashboardApi";
-import PopConfirm from "../../components/ui/PopConfirming";
+import { dashboardApi } from "../../../services/dashboardApi";
+import PopConfirm from "../../../components/ui/PopConfirming";
 
-import UpdateArticleHeader from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleHeader";
-import UpdateArticleForm from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleForm";
-import UpdateArticleSidebar from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleSidebar";
-import UpdateArticleImage from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleImage";
-import UpdateArticleActions from "../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleActions";
-
-import type { Category } from "../../types";
+import UpdateArticleHeader from "../../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleHeader";
+import UpdateArticleForm from "../../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleForm";
+import UpdateArticleSidebar from "../../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleSidebar";
+import UpdateArticleActions from "../../../components/DashboardAdmin/AdminArticles/UpdateArticle/UpdateArticleActions";
+import { Category } from "../../../types";
 
 export default function UpdateArticle() {
   const { id } = useParams();
@@ -22,7 +20,7 @@ export default function UpdateArticle() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState("");
   const [authorName, setAuthorName] = useState("");
 
   const [categoryId, setCategoryId] =
@@ -58,7 +56,7 @@ export default function UpdateArticle() {
 
         setContent(article.content ?? "");
 
-        setImage(article.image ?? null);
+        setImage(article.image ?? "");
 
         setAuthorName(article.author);
 
@@ -95,6 +93,7 @@ export default function UpdateArticle() {
           {
             title,
             content,
+            image,
             status,
             category_id: categoryId!,
           }
@@ -149,19 +148,13 @@ export default function UpdateArticle() {
                 categoryId={categoryId}
                 categories={categories}
                 status={status}
+                image={image ?? ""}
+                setImage={setImage}
                 setCategoryId={setCategoryId}
                 setStatus={setStatus}
               />
 
-              {image && (
-                <UpdateArticleImage
-                  image={image}
-                />
-              )}
-
-              <UpdateArticleActions
-                navigate={navigate}
-              />
+              <UpdateArticleActions navigate={navigate} />
 
             </div>
 

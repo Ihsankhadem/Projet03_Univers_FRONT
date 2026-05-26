@@ -32,13 +32,25 @@ export interface SpaceflightResponse {
   results: SpaceArticle[];
 }
 
-export interface Event {
+export interface Evenement {
   id: number;
   title: string;
   date: string;
+  start_time: string;
+  end_time: string;
   location: string;
   image?: string;
-  description?: string;
+  external_url: string;
+}
+
+export interface NasaImage {
+  date: string;
+  title: string;
+  explanation: string;
+  url: string;
+  hdurl?: string;
+  media_type: string;
+  copyright?: string;
 }
 
 export interface Category {
@@ -64,15 +76,16 @@ export interface CategoryDetail {
   articles: CategoryArticle[];
 }
 
-export type Tab = "articles" | "categories" | "users";
+export type Tab = "articles" | "categories" | "utilisateurs" | "événements";
 
 export type DashboardStats = {
+  users: number;
   articles: {
     total: number;
     published: number;
     drafts: number;
   };
-  users: number;
+  utilisateurs: number;
   external: {
     nasa: number;
     spaceflight: number;
@@ -85,6 +98,12 @@ export type PaginatedArticles = {
   totalPages: number;
 };
 
+export interface CategoryStats {
+  total_categories: number;
+  total_articles: number;
+  empty_categories: number;
+}
+
 // ---------------- AUTH ----------------
 
 export type Role = "rédacteur" | "administrateur";
@@ -94,7 +113,6 @@ export interface User {
   name: string;
   email: string;
   role: Role;
-
   total_articles?: number;
 }
 
@@ -111,4 +129,11 @@ export interface AuthContextType {
   loading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
+}
+
+export interface UserStats {
+  total_users: number;
+  total_admins: number;
+  total_editors: number;
+  total_articles: number;
 }

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { api } from "../services/api";
-import ArticleCard from "../components/Articles/ArticleCard";
-import SpaceArticleCard from "../components/Articles/SpaceArticleCard";
-import ArticlesHero from "../components/Articles/ArticlesHero";
-import ArticlesFilters from "../components/Articles/ArticlesFilters";
-import ArticlesPagination from "../components/ui/Pagination";
-import type { Article, Category, SpaceflightResponse } from "../types";
+import { api } from "../../services/api";
+import ArticleCard from "../../components/Articles/ArticleCard";
+import SpaceArticleCard from "../../components/Articles/SpaceArticleCard";
+import ArticlesHero from "../../components/Articles/ArticlesHero";
+import ArticlesFilters from "../../components/Articles/ArticlesFilters";
+import ArticlesPagination from "../../components/ui/Pagination";
+import type { Article, Category, SpaceflightResponse } from "../../types";
 
 const ITEMS_PER_PAGE = 9;
 
