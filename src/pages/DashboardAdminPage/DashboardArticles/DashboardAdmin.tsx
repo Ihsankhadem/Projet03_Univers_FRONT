@@ -1,3 +1,4 @@
+// src/pages/DashboardAdminPage/DashboardArticles/DashboardAdmin.tsx
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileText, Users, CheckCircle, Pencil } from "lucide-react";
@@ -26,15 +27,26 @@ export default function DashboardAdmin() {
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
   const debouncedSearch = useDebounce(search, 300);
-
   const limit = 5;
 
   // ---------------- SEARCH ----------------
   const handleSearch = (value: string) => {
     setSearch(value);
     setPage(1);
+  };
+
+  // ---------------- REFRESH ----------------
+  const refreshDashboard = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: ["articles-admin"],
+      }),
+
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard-stats"],
+      }),
+    ]);
   };
 
   // ---------------- STATS ----------------
@@ -55,9 +67,7 @@ export default function DashboardAdmin() {
   });
 
   const allArticles = articlesData ?? [];
-
   const totalPages = Math.ceil(allArticles.length / limit);
-
   const paginatedArticles = allArticles.slice((page - 1) * limit, page * limit);
 
   // ---------------- ACTIONS ----------------
@@ -74,18 +84,13 @@ export default function DashboardAdmin() {
 
     const newStatus = cycle[article.status];
 
-    await dashboardApi.updateStatus(article.id, newStatus);
+    try {
+      await dashboardApi.updateStatus(article.id, newStatus);
 
-    queryClient.setQueryData(
-      ["articles-admin", debouncedSearch],
-      (old: Article[] | undefined) => {
-        if (!old) return old;
-
-        return old.map((a) =>
-          a.id === article.id ? { ...a, status: newStatus } : a,
-        );
-      },
-    );
+      await refreshDashboard();
+    } catch (error) {
+      console.error("Erreur changement statut :", error);
+    }
   };
 
   const handleDelete = (id: number) => {
@@ -96,21 +101,17 @@ export default function DashboardAdmin() {
   const confirmDelete = async () => {
     if (!pendingDeleteId) return;
 
-    await dashboardApi.deleteArticle(pendingDeleteId);
+    try {
+      await dashboardApi.deleteArticle(pendingDeleteId);
 
-    queryClient.setQueryData(
-      ["articles-admin", debouncedSearch],
-      (old: Article[] | undefined) => {
-        if (!old) return old;
+      await refreshDashboard();
 
-        return old.filter((a) => a.id !== pendingDeleteId);
-      },
-    );
-
-    setConfirmOpen(false);
-    setPendingDeleteId(null);
+      setConfirmOpen(false);
+      setPendingDeleteId(null);
+    } catch (error) {
+      console.error("Erreur suppression :", error);
+    }
   };
-
   return (
     <div className="min-h-screen bg-[#F8F7FF]">
       <DashboardHeader />
@@ -170,7 +171,7 @@ export default function DashboardAdmin() {
         search={<DashboardSearch value={search} onChange={handleSearch} />}
         action={
           <button
-            onClick={() => navigate("/dashboard/articles/add")}
+            onClick={() => navigate("/dashboard/articles/new")}
             className="flex items-center gap-2 rounded-xl bg-violet-600/90 px-3 py-2 font-medium text-white shadow-lg shadow-violet-500/20 transition-all duration-200 hover:scale-[1.02] hover:bg-violet-500"
           >
             + Ajouter un article

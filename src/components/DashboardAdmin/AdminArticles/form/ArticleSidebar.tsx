@@ -7,8 +7,9 @@ type Status = "publié" | "brouillon" | "suspendu";
 
 interface Props {
   categories: Category[];
+
   categoryId: number | null;
-  setCategoryId: (id: number) => void;
+  setCategoryId: (id: number | null) => void;
 
   author: string;
 
@@ -17,6 +18,11 @@ interface Props {
 
   image: string;
   setImage: (image: string) => void;
+
+  errors: {
+    categoryId?: string;
+    image?: string;
+  };
 }
 
 export default function AddArticleSidebar({
@@ -28,6 +34,7 @@ export default function AddArticleSidebar({
   setImage,
   setStatus,
   author,
+  errors,
 }: Props) {
   useAuth();
 
@@ -36,33 +43,34 @@ export default function AddArticleSidebar({
     setStatus(value);
   };
 
-const uploadImage = async (file: File) => {
-  const formData = new FormData();
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
 
-  formData.append("file", file);
-  formData.append("upload_preset", "univers");
+    formData.append("file", file);
+    formData.append("upload_preset", "univers");
 
-  try {
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
-    const data = await res.json();
+      const data = await res.json();
 
-    setImage(data.secure_url);
+      setImage(data.secure_url);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  } catch (err) {
-    console.error(err);
-  }
-};
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
       <h3 className="text-lg font-bold text-slate-800">Informations</h3>
 
+      {/* IMAGE */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Image
@@ -78,8 +86,14 @@ const uploadImage = async (file: File) => {
 
             uploadImage(file);
           }}
-          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm"
+          className={`w-full bg-slate-50 border rounded-2xl px-4 py-3 text-sm ${
+            errors.image ? "border-red-400" : "border-slate-200"
+          }`}
         />
+
+        {errors.image && (
+          <p className="mt-2 text-sm text-red-500">{errors.image}</p>
+        )}
 
         {image && (
           <img src={image} className="mt-3 w-full rounded-2xl object-cover" />
@@ -107,8 +121,14 @@ const uploadImage = async (file: File) => {
 
         <select
           value={categoryId ?? ""}
-          onChange={(e) => setCategoryId(Number(e.target.value))}
-          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm"
+          onChange={(e) => {
+            const value = e.target.value;
+
+            setCategoryId(value ? Number(value) : null);
+          }}
+          className={`w-full bg-slate-50 border rounded-2xl px-4 py-3 text-sm ${
+            errors.categoryId ? "border-red-400" : "border-slate-200"
+          }`}
         >
           <option value="">Sélectionner</option>
 
@@ -118,6 +138,10 @@ const uploadImage = async (file: File) => {
             </option>
           ))}
         </select>
+
+        {errors.categoryId && (
+          <p className="mt-2 text-sm text-red-500">{errors.categoryId}</p>
+        )}
       </div>
 
       {/* STATUT */}
@@ -139,4 +163,3 @@ const uploadImage = async (file: File) => {
     </div>
   );
 }
-

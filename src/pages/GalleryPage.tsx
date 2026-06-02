@@ -63,7 +63,7 @@ export default function GalleryPage() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setVisibleCount(INITIAL_LOAD); // reset
+            setVisibleCount(INITIAL_LOAD);
           }}
           placeholder="Rechercher..."
           className="mb-8 w-full rounded-xl bg-[#0F172A] px-4 py-3 text-white"

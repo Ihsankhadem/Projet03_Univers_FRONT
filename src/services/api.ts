@@ -1,10 +1,21 @@
 // src/services/api.ts - module de communication avec l'API backend
 
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_API_URL?: string;
+    [key: string]: string | boolean | undefined;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const getToken = () => localStorage.getItem("token");
 
-// 👉 type propre pour query params
+//  type propre pour query params
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
 // Filtre null / undefined / "" pour éviter category=null dans l'URL

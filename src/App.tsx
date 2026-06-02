@@ -10,15 +10,15 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/DashboardAdminPage/DashboardArticles/DashboardAdmin";
-import UpdateArticle from "./pages/DashboardAdminPage/DashboardArticles/UpdateArticlePage";
 import CategoryPage from "./pages/DashboardAdminPage/CategoryPage";
 import UsersPage from "./pages/DashboardAdminPage/UsersPage";
 import AdminEvents from "./pages/DashboardAdminPage/EventsPage";
-import AddArticle from "./pages/DashboardAdminPage/DashboardArticles/AddArticlePage";
 import GalleryPage from "./pages/GalleryPage";
 
 import AdminRoutes from "./routes/Admin.routes";
+// @ts-ignore: allow importing css without type declarations
 import "./index.css";
+import ArticleEditorPage from "./pages/DashboardAdminPage/DashboardArticles/ArticleEditorPage";
 
 const AUTH_ROUTES = ["/auth"];
 
@@ -49,18 +49,19 @@ function Layout() {
             }
           />
           <Route
-            path="/dashboard/articles/add"
+            path="/dashboard/articles/new"
             element={
               <AdminRoutes>
-                <AddArticle />
+                <ArticleEditorPage />
               </AdminRoutes>
             }
           />
+
           <Route
             path="/dashboard/articles/:id/edit"
             element={
               <AdminRoutes>
-                <UpdateArticle />
+                <ArticleEditorPage />
               </AdminRoutes>
             }
           />
