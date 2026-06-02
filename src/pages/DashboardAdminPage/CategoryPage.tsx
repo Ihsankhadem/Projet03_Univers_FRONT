@@ -1,3 +1,4 @@
+// src/pages/DashboardAdminPage/CategoryPage.tsx
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Folder, FileText, Archive } from "lucide-react";
@@ -10,6 +11,7 @@ import CategoriesTable from "../../components/DashboardAdmin/AdminCategories/Cat
 import DashboardSection from "../../components/DashboardAdmin/DashboardSection";
 import CategoryForm from "../../components/DashboardAdmin/AdminCategories/CategoryForm";
 import CategoryModal from "../../components/DashboardAdmin/AdminCategories/CategoryModal";
+import { categorySchema } from "../../schemas/category.schema";
 import ArticlesPagination from "../../components/ui/Pagination";
 import type { Category, Tab, CategoryStats } from "../../types";
 
@@ -24,7 +26,7 @@ export default function CategoryPage() {
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null,
   );
-
+  const [errors, setErrors] = useState<{ name?: string }>({});
   const [openDelete, setOpenDelete] = useState(false);
   const [openForm, setOpenForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -46,6 +48,23 @@ export default function CategoryPage() {
       setCategoryToDelete(null);
     },
   });
+
+  const validateCategory = () => {
+    const result = categorySchema.safeParse({ name });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+
+      setErrors({
+        name: fieldErrors.name?.[0],
+      });
+
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
 
   // ================= CREATE / UPDATE =================
   const saveCategoryMutation = useMutation({
@@ -189,13 +208,11 @@ export default function CategoryPage() {
         />
       </DashboardSection>
 
-            {/* ================= CREATE / UPDATE MODAL ================= */}
+      {/* ================= CREATE / UPDATE MODAL ================= */}
       <CategoryModal
         open={openForm}
         title={
-          editingCategory
-            ? "Modifier la catégorie"
-            : "Créer une catégorie"
+          editingCategory ? "Modifier la catégorie" : "Créer une catégorie"
         }
         description={
           editingCategory
@@ -210,12 +227,12 @@ export default function CategoryPage() {
           setEditingCategory(null);
           setName("");
         }}
-        onConfirm={() => saveCategoryMutation.mutate()}
+        onConfirm={() => {
+          if (!validateCategory()) return;
+          saveCategoryMutation.mutate();
+        }}
       >
-        <CategoryForm
-          name={name}
-          setName={setName}
-        />
+        <CategoryForm name={name} setName={setName} error={errors.name} />
       </CategoryModal>
 
       {/* ================= DELETE MODAL ================= */}
@@ -236,9 +253,7 @@ export default function CategoryPage() {
           }
         }}
       >
-        <p className="text-sm text-slate-500">
-          Cette action est irréversible.
-        </p>
+        <p className="text-sm text-slate-500">Cette action est irréversible.</p>
       </CategoryModal>
     </div>
   );

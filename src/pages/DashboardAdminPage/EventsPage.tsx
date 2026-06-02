@@ -1,3 +1,4 @@
+// src/pages/DashboardAdminPage/EventsPage.tsx
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Calendar } from "lucide-react";
@@ -16,6 +17,10 @@ import DashboardCard from "../../components/DashboardAdmin/DashboardCard";
 import { dashboardApi } from "../../services/dashboardApi";
 import type { Tab, Evenement } from "../../types";
 
+import { toDateInput } from "../../utils/date";
+import { EventSchema } from "../../schemas/event.schema";
+import { toEventApi } from "../../utils/eventMapper";
+
 export default function EventsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("événements");
 
@@ -28,7 +33,6 @@ export default function EventsPage() {
   const [editingEvent, setEditingEvent] = useState<Evenement | null>(null);
   const [eventToDelete, setEventToDelete] = useState<Evenement | null>(null);
 
-  // ================= FORM =================
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -36,33 +40,32 @@ export default function EventsPage() {
   const [location, setLocation] = useState("");
   const [image, setImage] = useState("");
   const [externalUrl, setExternalUrl] = useState("");
-
+  const [errors, setErrors] = useState<{
+    title?: string;
+    date?: string;
+    startTime?: string;
+    endTime?: string;
+    location?: string;
+    image?: string;
+    externalUrl?: string;
+  }>({});
+  const queryClient = useQueryClient();
   const limit = 5;
 
-  const queryClient = useQueryClient();
-
-  // ================= GET EVENTS =================
   const { data: events = [], isLoading } = useQuery<Evenement[]>({
     queryKey: ["events", search],
     queryFn: () => dashboardApi.getEvents(search),
   });
 
-  // ================= FILTER =================
-  const filteredEvents = events.filter((e) =>
+  const filtered = events.filter((e) =>
     `${e.title} ${e.location ?? ""}`
       .toLowerCase()
       .includes(search.toLowerCase()),
   );
 
-  // ================= PAGINATION =================
-  const totalPages = Math.ceil(filteredEvents.length / limit);
+  const totalPages = Math.ceil(filtered.length / limit);
+  const paginated = filtered.slice((page - 1) * limit, page * limit);
 
-  const paginatedEvents = filteredEvents.slice(
-    (page - 1) * limit,
-    page * limit,
-  );
-
-  // ================= RESET FORM =================
   const resetForm = () => {
     setEditingEvent(null);
 
@@ -73,21 +76,44 @@ export default function EventsPage() {
     setLocation("");
     setImage("");
     setExternalUrl("");
+
+    setErrors({});
+  };
+  const validateEvent = () => {
+    const payload = {
+      title,
+      date,
+      startTime,
+      endTime,
+      location,
+      image,
+      externalUrl,
+    };
+
+    const parsed = EventSchema.safeParse(payload);
+
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+
+      setErrors({
+        title: fieldErrors.title?.[0] || "",
+        date: fieldErrors.date?.[0] || "",
+        startTime: fieldErrors.startTime?.[0] || "",
+        endTime: fieldErrors.endTime?.[0] || "",
+        location: fieldErrors.location?.[0] || "",
+        image: fieldErrors.image?.[0] || "",
+        externalUrl: fieldErrors.externalUrl?.[0] || "",
+      });
+
+      return false;
+    }
+
+    setErrors({});
+    return parsed.data;
   };
 
-  // ================= CREATE / UPDATE =================
   const saveMutation = useMutation({
-    mutationFn: async () => {
-      const data = {
-        title,
-        date,
-        start_time: startTime,
-        end_time: endTime,
-        location,
-        image,
-        external_url: externalUrl,
-      };
-
+    mutationFn: async (data: any) => {
       if (editingEvent) {
         return dashboardApi.updateEvent(editingEvent.id, data);
       }
@@ -96,25 +122,16 @@ export default function EventsPage() {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["events"],
-      });
-
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       setOpenForm(false);
-
       resetForm();
     },
   });
 
-  // ================= DELETE =================
   const deleteMutation = useMutation({
     mutationFn: (id: number) => dashboardApi.deleteEvent(id),
-
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["events"],
-      });
-
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       setOpenDelete(false);
       setEventToDelete(null);
     },
@@ -124,17 +141,15 @@ export default function EventsPage() {
     <div className="min-h-screen bg-[#F8F7FF]">
       <DashboardHeader />
 
-      {/* ================= STATS ================= */}
       <div className="mt-8 px-8">
         <DashboardCard
           title="Événements"
           value={events.length}
-          icon={<Calendar className="h-4 w-4" />}
+          icon={<Calendar />}
           accent="purple"
         />
       </div>
 
-      {/* ================= TABLE ================= */}
       <DashboardSection
         search={
           <DashboardSearch
@@ -151,19 +166,16 @@ export default function EventsPage() {
               resetForm();
               setOpenForm(true);
             }}
-            className="flex items-center gap-2 rounded-xl bg-violet-600 px-3 py-2 text-white"
+            className="flex items-center gap-2 rounded-xl bg-violet-600/90 px-3 py-2 font-medium text-white shadow-lg shadow-violet-500/20 hover:scale-[1.02] hover:bg-violet-500"
           >
             + Ajouter un événement
           </button>
         }
         tabs={
-          <DashboardTabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
+          <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         }
         loading={isLoading}
-        isEmpty={paginatedEvents.length === 0}
+        isEmpty={paginated.length === 0}
         emptyMessage="Aucun événement."
         pagination={
           <ArticlesPagination
@@ -174,14 +186,18 @@ export default function EventsPage() {
         }
       >
         <EventsTable
-          events={paginatedEvents}
+          events={paginated}
           onEdit={(event) => {
-            setEditingEvent(event);
+            const formattedDate = toDateInput(event.date);
 
+            setEditingEvent(event);
             setTitle(event.title ?? "");
-            setDate(event.date ?? "");
-            setStartTime(event.start_time ?? "");
-            setEndTime(event.end_time ?? "");
+            setDate(formattedDate);
+
+            // Correction format HH:mm
+            setStartTime(event.start_time?.slice(0, 5) ?? "");
+            setEndTime(event.end_time?.slice(0, 5) ?? "");
+
             setLocation(event.location ?? "");
             setImage(event.image ?? "");
             setExternalUrl(event.external_url ?? "");
@@ -189,16 +205,13 @@ export default function EventsPage() {
             setOpenForm(true);
           }}
           onDelete={(id) => {
-            const foundEvent =
-              events.find((event) => event.id === id) || null;
-
-            setEventToDelete(foundEvent);
+            console.log("🗑️ DELETE CLICK", id);
+            setEventToDelete(events.find((e) => e.id === id) || null);
             setOpenDelete(true);
           }}
         />
       </DashboardSection>
 
-      {/* ================= FORM MODAL ================= */}
       <DashboardModal
         open={openForm}
         title={editingEvent ? "Modifier" : "Créer"}
@@ -209,7 +222,22 @@ export default function EventsPage() {
           setOpenForm(false);
           resetForm();
         }}
-        onConfirm={() => saveMutation.mutate()}
+        onConfirm={() => {
+          const validated = validateEvent();
+          if (!validated) return;
+
+          const data = {
+            title,
+            date,
+            start_time: startTime,
+            end_time: endTime,
+            location,
+            image,
+            external_url: externalUrl,
+          };
+
+          saveMutation.mutate(data);
+        }}
       >
         <EventForm
           title={title}
@@ -229,7 +257,6 @@ export default function EventsPage() {
         />
       </DashboardModal>
 
-      {/* ================= DELETE MODAL ================= */}
       <DashboardModal
         open={openDelete}
         title="Supprimer"
@@ -237,14 +264,9 @@ export default function EventsPage() {
         confirmLabel="Supprimer"
         variant="danger"
         loading={deleteMutation.isPending}
-        onClose={() => {
-          setOpenDelete(false);
-          setEventToDelete(null);
-        }}
+        onClose={() => setOpenDelete(false)}
         onConfirm={() => {
-          if (eventToDelete) {
-            deleteMutation.mutate(eventToDelete.id);
-          }
+          if (eventToDelete) deleteMutation.mutate(eventToDelete.id);
         }}
       />
     </div>

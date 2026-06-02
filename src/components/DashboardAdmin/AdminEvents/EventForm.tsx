@@ -1,4 +1,7 @@
+// src/components/DashboardAdmin/AdminEvents/EventForm.tsx
 import DashboardFormField from "../DashboardFormField";
+import DateTime from "../../ui/DateTime";
+import ModernTime from "../../ui/ModernTime";
 
 type Props = {
   title: string;
@@ -21,6 +24,16 @@ type Props = {
 
   externalUrl: string;
   setExternalUrl: (v: string) => void;
+
+  errors?: {
+    title?: string;
+    date?: string;
+    startTime?: string;
+    endTime?: string;
+    location?: string;
+    image?: string;
+    externalUrl?: string;
+  };
 };
 
 export default function EventForm({
@@ -38,34 +51,27 @@ export default function EventForm({
   setImage,
   externalUrl,
   setExternalUrl,
+  errors,
 }: Props) {
   const uploadImage = async (file: File) => {
     const formData = new FormData();
-
     formData.append("file", file);
-
-    // ton upload preset cloudinary
     formData.append("upload_preset", "univers");
 
-    try {
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
 
-      const data = await res.json();
-      console.log(data);
-      setImage(data.secure_url);
-    } catch (err) {
-      console.error(err);
-    }
+    const data = await res.json();
+    setImage(data.secure_url);
   };
 
   return (
-    <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+    <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
       {/* IMAGE */}
       <div>
         <label className="text-sm font-medium">Image</label>
@@ -76,7 +82,6 @@ export default function EventForm({
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (!file) return;
-
             uploadImage(file);
           }}
         />
@@ -84,42 +89,37 @@ export default function EventForm({
         {image && (
           <img
             src={image}
-            className="mt-2 h-32 w-full object-cover rounded-lg"
+            className="mt-3 h-32 w-full rounded-xl object-cover border"
           />
         )}
       </div>
 
-      <DashboardFormField label="Nom" value={title} onChange={setTitle} />
-
+      {/* TITLE */}
       <DashboardFormField
-        label="Date"
-        type="date"
-        value={date}
-        onChange={setDate}
+        label="Nom"
+        value={title}
+        onChange={setTitle}
+        error={errors?.title}
       />
 
-      <div className="grid grid-cols-2 gap-3">
-        <DashboardFormField
-          label="Début"
-          type="time"
-          value={startTime}
-          onChange={setStartTime}
-        />
+      {/* DATE */}
+      <DateTime date={date} setDate={setDate} />
 
-        <DashboardFormField
-          label="Fin"
-          type="time"
-          value={endTime}
-          onChange={setEndTime}
-        />
+      {/* TIME */}
+      <div className="grid grid-cols-2 gap-3">
+        <ModernTime label="Début" value={startTime} onChange={setStartTime} />
+
+        <ModernTime label="Fin" value={endTime} onChange={setEndTime} />
       </div>
 
+      {/* LOCATION */}
       <DashboardFormField
         label="Lieu"
         value={location}
         onChange={setLocation}
       />
 
+      {/* URL */}
       <DashboardFormField
         label="Lien externe"
         value={externalUrl}
