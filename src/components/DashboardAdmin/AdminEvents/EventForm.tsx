@@ -2,6 +2,8 @@
 import DashboardFormField from "../DashboardFormField";
 import DateTime from "../../ui/DateTime";
 import ModernTime from "../../ui/ModernTime";
+import { uploadImage } from "../../../services/upload.service";
+import { useAuth } from "../../../Hooks/useAuth";
 
 type Props = {
   title: string;
@@ -53,21 +55,20 @@ export default function EventForm({
   setExternalUrl,
   errors,
 }: Props) {
-  const uploadImage = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "univers");
+  const { token } = useAuth(); // IMPORTANT: adapte selon ton hook
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
+  const handleUpload = async (file: File) => {
+    if (!token) {
+      console.error("No token available");
+      return;
+    }
 
-    const data = await res.json();
-    setImage(data.secure_url);
+    try {
+      const url = await uploadImage(file, token);
+      setImage(url);
+    } catch (err) {
+      console.error("Upload error", err);
+    }
   };
 
   return (
@@ -82,7 +83,7 @@ export default function EventForm({
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (!file) return;
-            uploadImage(file);
+            handleUpload(file);
           }}
         />
 

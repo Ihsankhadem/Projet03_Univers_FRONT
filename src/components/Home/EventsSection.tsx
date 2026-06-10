@@ -1,3 +1,4 @@
+// src/components/Home/EventsSection.tsx
 import { useEffect, useRef, useState } from "react";
 import {
   Calendar,

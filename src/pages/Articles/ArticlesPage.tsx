@@ -19,12 +19,10 @@ export default function ArticlesPage() {
 
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-
   const [selectedCat, setSelectedCat] = useState<number | null>(null);
 
   // Onglets source
   const [source, setSource] = useState<"all" | "bdd" | "space">("all");
-
   const [sort, setSort] = useState<"date" | "views">("date");
   const [page, setPage] = useState(1);
 
