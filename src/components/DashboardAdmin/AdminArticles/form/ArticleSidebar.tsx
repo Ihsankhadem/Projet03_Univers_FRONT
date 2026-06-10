@@ -1,10 +1,10 @@
-// components/DashboardAdmin/AdminArticles/AddArticle/AddArticleSidebar.tsx
+// components/DashboardAdmin/AdminArticles/AddArticle/ArticleSidebar.tsx
 
 import { useAuth } from "../../../../Hooks/useAuth";
 import type { Category } from "../../../../types";
+import { uploadImage } from "../../../../services/upload.service";
 
 type Status = "publié" | "brouillon" | "suspendu";
-
 interface Props {
   categories: Category[];
 
@@ -36,33 +36,26 @@ export default function AddArticleSidebar({
   author,
   errors,
 }: Props) {
-  useAuth();
-
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as Status;
     setStatus(value);
   };
 
-  const uploadImage = async (file: File) => {
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("upload_preset", "univers");
+  const { token } = useAuth();
+  const handleUpload = async (file: File) => {
+    if (!token) {
+      console.error("No token available");
+      return;
+    }
 
     try {
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const url = await uploadImage(file, token);
 
-      const data = await res.json();
+      console.log("UPLOAD URL =", url);
 
-      setImage(data.secure_url);
+      setImage(url);
     } catch (err) {
-      console.error(err);
+      console.error("Upload error", err);
     }
   };
 
@@ -70,7 +63,6 @@ export default function AddArticleSidebar({
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
       <h3 className="text-lg font-bold text-slate-800">Informations</h3>
 
-      {/* IMAGE */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Image
@@ -84,7 +76,7 @@ export default function AddArticleSidebar({
 
             if (!file) return;
 
-            uploadImage(file);
+            handleUpload(file);
           }}
           className={`w-full bg-slate-50 border rounded-2xl px-4 py-3 text-sm ${
             errors.image ? "border-red-400" : "border-slate-200"
@@ -100,7 +92,6 @@ export default function AddArticleSidebar({
         )}
       </div>
 
-      {/* AUTEUR */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Auteur
@@ -113,7 +104,6 @@ export default function AddArticleSidebar({
         />
       </div>
 
-      {/* CATÉGORIE */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Catégorie
@@ -144,7 +134,6 @@ export default function AddArticleSidebar({
         )}
       </div>
 
-      {/* STATUT */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Statut
