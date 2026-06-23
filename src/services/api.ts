@@ -1,4 +1,4 @@
-// src/services/api.ts - module de communication avec l'API backend
+// src/services/api.ts - module de communication avec le backend
 
 declare global {
   interface ImportMetaEnv {
@@ -15,26 +15,48 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const getToken = () => localStorage.getItem("token");
 
-//  type propre pour query params
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
-// Filtre null / undefined / "" pour éviter category=null dans l'URL
+/**
+ * Nettoie les query params
+ */
 const buildUrl = (path: string, params?: QueryParams): string => {
   if (!params) return path;
 
-  const clean = Object.fromEntries(
+  const cleanParams = Object.fromEntries(
     Object.entries(params).filter(
       ([, v]) => v !== null && v !== undefined && v !== "",
     ),
   );
 
   const query = new URLSearchParams(
-    Object.entries(clean).map(([k, v]) => [k, String(v)]),
+    Object.entries(cleanParams).map(([k, v]) => [k, String(v)]),
   ).toString();
 
   return query ? `${path}?${query}` : path;
 };
 
+/**
+ * Parse les erreurs backend proprement
+ */
+const parseError = async (res: Response) => {
+  let data: any = null;
+
+  try {
+    data = await res.json();
+  } catch {
+    // ignore JSON error
+  }
+
+  // IMPORTANT: ton backend renvoie parfois "error" ou "message"
+  const message = data?.message || data?.error || `Erreur ${res.status}`;
+
+  return message;
+};
+
+/**
+ * Requête générique
+ */
 const request = async <T>(
   path: string,
   options: RequestInit = {},
@@ -43,29 +65,24 @@ const request = async <T>(
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(getToken() && { Authorization: `Bearer ${getToken()}` }),
+      ...(getToken() && {
+        Authorization: `Bearer ${getToken()}`,
+      }),
       ...options.headers,
     },
   });
 
-  const data: unknown = await res.json().catch(() => null);
-
   if (!res.ok) {
-    // petit safe cast
-    const errorMessage =
-      typeof data === "object" &&
-      data &&
-      "message" in data &&
-      typeof (data as { message?: unknown }).message === "string"
-        ? (data as { message: string }).message
-        : `Erreur ${res.status}`;
-
-    throw new Error(errorMessage);
+    const message = await parseError(res);
+    throw new Error(message);
   }
 
-  return data as T;
+  return res.json() as Promise<T>;
 };
 
+/**
+ * API wrapper propre
+ */
 export const api = {
   get: <T>(path: string, params?: QueryParams) =>
     request<T>(buildUrl(path, params)),
@@ -73,7 +90,10 @@ export const api = {
   post: <T>(path: string, body: unknown) =>
     request<T>(path, {
       method: "POST",
-      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body ?? {}),
     }),
 
   put: <T>(path: string, body: unknown) =>

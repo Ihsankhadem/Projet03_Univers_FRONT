@@ -8,6 +8,7 @@ import Button from "../ui/Buttons";
 import { api } from "../../services/api";
 import { useAuth } from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 interface FormData {
   email: string;
@@ -59,45 +60,50 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!validate()) return;
+  if (!validate()) return;
 
-    setErrors({});
-    setIsLoading(true);
+  setErrors({});
+  setIsLoading(true);
 
-    try {
-      const data = await api.post<{
-        token: string;
-        user: {
-          id: number;
-          name: string;
-          email: string;
-          role: "rédacteur" | "administrateur";
-        };
-      }>("/api/auth/login", {
-        email: form.email,
-        password: form.password,
-      });
+  try {
+    const data = await api.post<{
+      token: string;
+      user: {
+        id: number;
+        name: string;
+        email: string;
+        role: "rédacteur" | "administrateur";
+        mustChangePassword: boolean;
+      };
+    }>("/api/auth/login", {
+      email: form.email,
+      password: form.password,
+    });
 
-      login(data.token, data.user);
+    login(data.token, data.user);
 
+    if (data.user.role === "administrateur") {
       navigate("/dashboard");
-    } catch (error: unknown) {
-      let message = "Erreur de connexion";
-
-      if (error instanceof Error) {
-        message = error.message;
-      }
-
-      setErrors({
-        general: message,
-      });
-    } finally {
-      setIsLoading(false);
+    } else if (data.user.role === "rédacteur") {
+      navigate("/dashboard/redacteur");
+    } else {
+      navigate("/");
     }
-  };
+
+  } catch (error: any) {
+    const message =
+      error?.response?.data?.message ||
+      error?.message ||
+      "Erreur de connexion";
+
+    setErrors({ general: message });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div
@@ -160,14 +166,15 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           </button>
         </p>
 
-        <p className="text-center mt-2 text-sm">
+        <div className="mt-4 text-center">
           <Link
             to="/"
-            className="text-gray-500 hover:text-gray-300 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition group"
           >
-            ← Retour au site
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Retour à l’accueil
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

@@ -9,16 +9,21 @@ import DetailsSpaceArticle from "./pages/Articles/DetailsSpaceArticle";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import GalleryPage from "./pages/GalleryPage";
+
 import Dashboard from "./pages/DashboardAdminPage/DashboardArticles/DashboardAdmin";
+import DashboardRedacteur from "./pages/DashboardRedacteur/DashboardRedacteur";
 import CategoryPage from "./pages/DashboardAdminPage/CategoryPage";
 import UsersPage from "./pages/DashboardAdminPage/UsersPage";
 import AdminEvents from "./pages/DashboardAdminPage/EventsPage";
-import GalleryPage from "./pages/GalleryPage";
+import ArticleEditorPage from "./pages/DashboardAdminPage/DashboardArticles/ArticleEditorPage";
+import ChangePasswordPage from "./pages/DashboardRedacteur/ChangePasswordPage";
 
 import AdminRoutes from "./routes/Admin.routes";
-// @ts-ignore: allow importing css without type declarations
+import RequireRedacteur from "./routes/RequireRedacteur";
+import RequireDashboard from "./routes/RequireDashboard";
+
 import "./index.css";
-import ArticleEditorPage from "./pages/DashboardAdminPage/DashboardArticles/ArticleEditorPage";
 
 const AUTH_ROUTES = ["/auth"];
 
@@ -32,6 +37,7 @@ function Layout() {
 
       <main className="min-h-[80vh]">
         <Routes>
+          {/* PUBLIC */}
           <Route path="/" element={<Home />} />
           <Route path="/articles" element={<ArticlesPage />} />
           <Route path="/articles/:id" element={<DetailsArticle />} />
@@ -40,6 +46,7 @@ function Layout() {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/auth" element={<Auth />} />
 
+          {/* DASHBOARD ADMIN */}
           <Route
             path="/dashboard"
             element={
@@ -48,24 +55,46 @@ function Layout() {
               </AdminRoutes>
             }
           />
+
+          {/* DASHBOARD REDACTEUR */}
+          <Route
+            path="/dashboard/redacteur"
+            element={
+              <RequireRedacteur>
+                <DashboardRedacteur />
+              </RequireRedacteur>
+            }
+          />
+
+          {/* ARTICLES : ADMIN + REDACTEUR */}
           <Route
             path="/dashboard/articles/new"
             element={
-              <AdminRoutes>
+              <RequireDashboard>
                 <ArticleEditorPage />
-              </AdminRoutes>
+              </RequireDashboard>
             }
           />
 
           <Route
             path="/dashboard/articles/:id/edit"
             element={
-              <AdminRoutes>
+              <RequireDashboard>
                 <ArticleEditorPage />
-              </AdminRoutes>
+              </RequireDashboard>
             }
           />
 
+          <Route
+            path="/dashboard/change-password"
+            element={
+              <RequireDashboard>
+                <ChangePasswordPage />
+              </RequireDashboard>
+            }
+          />
+
+          {/* ADMIN UNIQUEMENT */}
           <Route
             path="/categories"
             element={
@@ -74,6 +103,7 @@ function Layout() {
               </AdminRoutes>
             }
           />
+
           <Route
             path="/categories/:id"
             element={

@@ -1,4 +1,5 @@
 // src/pages/DashboardAdminPage/DashboardArticles/ArticleEditorPage.tsx
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,7 +20,7 @@ import { Category } from "../../../types";
 
 export default function ArticleEditorPage() {
   const { id } = useParams();
-  const isEditMode = !!id;
+  const isEditMode = Boolean(id);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -46,31 +47,47 @@ export default function ArticleEditorPage() {
     image?: string;
   }>({});
 
-  // LOAD DATA (edit mode)
+  // ================= LOAD DATA =================
   useEffect(() => {
+    let isMounted = true;
+
     const load = async () => {
       try {
+        setLoading(true);
+
         const cats = await dashboardApi.getCategories();
+        if (!isMounted) return;
+
         setCategories(cats);
 
         if (id) {
-          const article = await dashboardApi.getArticleById(Number(id));
+          const article =
+            user?.role === "administrateur"
+              ? await dashboardApi.getArticleById(Number(id))
+              : await dashboardApi.getMyArticleById(Number(id));
 
-          setTitle(article.title);
-          setContent(article.content ?? "");
-          setImage(article.image ?? "");
+          if (!article) return;
+
+          setTitle(article.title || "");
+          setContent(article.content || "");
+          setImage(article.image || "");
           setCategoryId(article.category_id ?? null);
-          setStatus(article.status);
+          setStatus((article.status as any) || "brouillon");
         }
+      } catch (err) {
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     load();
-  }, [id]);
 
-  // VALIDATION
+    return () => {
+      isMounted = false;
+    };
+  }, [id, user?.role]);
+
+  // ================= VALIDATION =================
   const validateForm = () => {
     const result = articleSchema.safeParse({ title, content });
 
@@ -87,47 +104,64 @@ export default function ArticleEditorPage() {
     if (!image) newErrors.image = "Ajoutez une image";
 
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
+  // ================= SUBMIT =================
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+
+    const valid = validateForm();
+
+    if (!valid) return;
+
     setConfirmOpen(true);
   };
 
-  // CREATE / UPDATE
+  // ================= CREATE / UPDATE =================
   const handleConfirm = async () => {
     try {
       if (!user) return;
 
-      if (isEditMode) {
-        await dashboardApi.updateArticle(Number(id), {
-          title,
-          content,
-          image,
-          status,
-          category_id: categoryId!,
-        });
+      const payload = {
+        title,
+        content,
+        image,
+        category_id: categoryId!,
+        status,
+      };
 
-        await queryClient.invalidateQueries({ queryKey: ["articles-admin"] });
-      } else {
-        await dashboardApi.createArticle({
-          title,
-          content,
-          image,
-          category_id: categoryId!,
-          status,
-          author_id: user.id,
+      if (isEditMode) {
+        if (user.role === "administrateur") {
+          await dashboardApi.updateArticle(Number(id), payload);
+        } else {
+          await dashboardApi.updateMyArticle(Number(id), payload);
+        }
+
+        await queryClient.invalidateQueries({
+          queryKey: ["articles-admin"],
         });
+      } else {
+        if (user.role === "administrateur") {
+          await dashboardApi.createArticle({
+            ...payload,
+            author_id: user.id,
+          });
+        } else {
+          await dashboardApi.createMyArticle(payload);
+        }
       }
 
-      navigate("/dashboard");
+      navigate("/dashboard/redacteur");
+    } catch (err) {
+      console.error("Erreur création/modification article :", err);
     } finally {
       setConfirmOpen(false);
     }
   };
 
+  // ================= LOADING =================
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-slate-500 bg-white">
@@ -166,7 +200,9 @@ export default function ArticleEditorPage() {
                 errors={errors}
               />
 
-              <ArticleActions onCancel={() => navigate("/dashboard")} />
+              <ArticleActions
+                onCancel={() => navigate("/dashboard/redacteur")}
+              />
             </div>
           </div>
         </form>
