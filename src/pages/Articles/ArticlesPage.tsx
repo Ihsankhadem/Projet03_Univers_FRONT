@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+// src/pages/Articles/ArticlesPage.tsx
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../../services/api";
 import ArticleCard from "../../components/Articles/ArticleCard";
 import SpaceArticleCard from "../../components/Articles/SpaceArticleCard";
@@ -17,95 +18,134 @@ export default function ArticlesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [selectedCat, setSelectedCat] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
 
-  // Onglets source
+  const [selectedCat, setSelectedCat] = useState<number | null>(null);
   const [source, setSource] = useState<"all" | "bdd" | "space">("all");
   const [sort, setSort] = useState<"date" | "views">("date");
   const [page, setPage] = useState(1);
 
+  /* =========================
+     SEARCH DEBOUNCE
+  ========================= */
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const t = setTimeout(() => {
       setSearch(searchInput);
       setPage(1);
-    }, 500);
-    return () => clearTimeout(timeout);
+    }, 400);
+
+    return () => clearTimeout(t);
   }, [searchInput]);
 
+  /* =========================
+     LOAD DATA (FAST)
+  ========================= */
   useEffect(() => {
-    Promise.all([
-      api.get<Article[]>("/api/articles"),
-      api.get<Category[]>("/api/categories"),
-      api.get<SpaceflightResponse>("/api/spaceflight/articles?limit=50"),
-    ])
-      .then(([arts, cats, space]) => {
-        setArticles(arts);
-        setCategories(cats);
-        setSpaceArticles(space.results);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    const load = async () => {
+      try {
+        const [arts, cats, space] = await Promise.all([
+          api.get<Article[]>("/api/articles"),
+          api.get<Category[]>("/api/categories"),
+          api.get<SpaceflightResponse>("/api/spaceflight/articles?limit=25"),
+        ]);
+
+        setArticles(arts || []);
+        setCategories(cats || []);
+        setSpaceArticles(space?.results || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
-  // Normalisation Spaceflight → catégorie BDD id=6
-  const normalizedSpace: Article[] = spaceArticles.map((s) => ({
-    id: s.id,
-    title: s.title,
-    content: s.summary,
-    image: s.image_url,
-    author: s.news_site,
-    category: "Actualités Spatiales",
-    category_id: 6,
-    views: 0,
-    status: "publié" as const,
-    created_at: s.published_at,
-    source: "space" as const,
-    external_url: s.url,
-  }));
+  /* =========================
+     SPACE NORMALIZATION (MEMO)
+  ========================= */
+  const normalizedSpace = useMemo(() => {
+    return spaceArticles.map((s) => ({
+      id: s.id,
+      title: s.title,
+      content: s.summary,
+      image: s.image_url,
+      author: s.news_site,
+      category: "Actualités Spatiales",
+      category_id: 6,
+      views: 0,
+      status: "publié" as const,
+      created_at: s.published_at,
+      source: "space" as const,
+      external_url: s.url,
+    }));
+  }, [spaceArticles]);
 
-  // Merge BDD + Spaceflight
-  const merged = [
-    ...articles.map((a) => ({ ...a, source: "bdd" as const })),
-    ...normalizedSpace,
-  ];
+  /* =========================
+     MERGE DATA
+  ========================= */
+  const merged = useMemo(() => {
+    return [
+      ...articles.map((a) => ({ ...a, source: "bdd" as const })),
+      ...normalizedSpace,
+    ];
+  }, [articles, normalizedSpace]);
 
-  // Filtre par onglet
-  const sourceFiltered =
-    source === "bdd"
-      ? merged.filter((a) => a.source === "bdd")
-      : source === "space"
-        ? merged.filter((a) => a.source === "space")
-        : merged;
+  /* =========================
+     FILTER SOURCE
+  ========================= */
+  const sourceFiltered = useMemo(() => {
+    if (source === "bdd") return merged.filter((a) => a.source === "bdd");
+    if (source === "space") return merged.filter((a) => a.source === "space");
+    return merged;
+  }, [merged, source]);
 
-  // Filtre catégorie + recherche + tri
-  const filtered = sourceFiltered
-    .filter((a) => (selectedCat ? a.category_id === selectedCat : true))
-    .filter((a) =>
-      search.trim()
-        ? a.title.toLowerCase().includes(search.toLowerCase()) ||
-          a.author.toLowerCase().includes(search.toLowerCase())
-        : true,
-    )
-    .sort((a, b) =>
-      sort === "date"
-        ? new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        : b.views - a.views,
-    );
+  /* =========================
+     FILTER + SEARCH + SORT
+  ========================= */
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
 
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const paginated = filtered.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE,
+    return sourceFiltered
+      .filter((a) => !selectedCat || a.category_id === selectedCat)
+      .filter((a) => {
+        if (!q) return true;
+        return (
+          a.title.toLowerCase().includes(q) ||
+          a.author.toLowerCase().includes(q)
+        );
+      })
+      .sort((a, b) =>
+        sort === "date"
+          ? new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          : b.views - a.views,
+      );
+  }, [sourceFiltered, selectedCat, search, sort]);
+
+  /* =========================
+     PAGINATION
+  ========================= */
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)),
+    [filtered.length],
   );
 
+  const paginated = useMemo(() => {
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return filtered.slice(start, start + ITEMS_PER_PAGE);
+  }, [filtered, page]);
+
+  /* =========================
+     UI
+  ========================= */
   return (
     <div className="min-h-screen bg-[#0B0F1A]">
       <ArticlesHero />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-16">
-        {/* Onglets source */}
+        {/* SOURCES */}
         <div className="flex gap-2 mb-6">
           {[
             ["all", "Tous"],
@@ -115,7 +155,7 @@ export default function ArticlesPage() {
             <button
               key={val}
               onClick={() => {
-                setSource(val as "all" | "bdd" | "space");
+                setSource(val as any);
                 setSelectedCat(null);
                 setPage(1);
               }}

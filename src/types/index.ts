@@ -9,7 +9,7 @@ export interface Article {
   category: string;
   category_id?: number;
   views: number;
-  status: "brouillon" | "publié";
+  status: "brouillon" | "publié" | "suspendu";
   created_at: string;
   source?: "bdd" | "space";
   external_url?: string;
@@ -84,6 +84,7 @@ export type DashboardStats = {
     total: number;
     published: number;
     drafts: number;
+    suspended: number;
   };
   utilisateurs: number;
   external: {
@@ -113,6 +114,7 @@ export interface User {
   name: string;
   email: string;
   role: Role;
+  mustChangePassword: boolean;
   total_articles?: number;
 }
 
@@ -129,6 +131,12 @@ export interface AuthContextType {
   loading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export interface UserStats {

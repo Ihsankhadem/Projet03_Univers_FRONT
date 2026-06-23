@@ -83,6 +83,7 @@ export default function Navbar() {
             </NavLink>
           )}
 
+          {/* DASHBOARD ADMIN */}
           {user?.role === "administrateur" && (
             <NavLink
               to="/dashboard"
@@ -94,7 +95,23 @@ export default function Navbar() {
                 }`
               }
             >
-              Dashboard
+              Dashboard Admin
+            </NavLink>
+          )}
+
+          {/* DASHBOARD REDACTEUR */}
+          {user?.role === "rédacteur" && (
+            <NavLink
+              to="/dashboard/redacteur"
+              className={({ isActive }) =>
+                `px-5 py-2 rounded-xl border transition-all duration-200 font-semibold ${
+                  isActive
+                    ? "bg-white text-slate-900 border-white"
+                    : "bg-slate-800/70 text-slate-100 border-slate-700 hover:bg-slate-700"
+                }`
+              }
+            >
+              Dashboard Rédacteur
             </NavLink>
           )}
         </div>

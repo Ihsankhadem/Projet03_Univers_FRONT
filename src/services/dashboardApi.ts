@@ -160,4 +160,62 @@ export const dashboardApi = {
   deleteEvent: async (id: number): Promise<{ success: boolean }> => {
     return api.delete(`/api/events/${id}`);
   },
+
+  getMyStats: async (): Promise<DashboardStats> => {
+    return api.get<DashboardStats>("/api/dashboard/admin/my-stats");
+  },
+
+  // ================= REDACTEUR =================
+
+  getAllArticlesForRedacteur: async (search = ""): Promise<Article[]> => {
+    return api.get<Article[]>("/api/dashboard/redacteur/all-articles", {
+      search,
+    });
+  },
+  getRedacteurStats: async (): Promise<DashboardStats> => {
+    return api.get<DashboardStats>("/api/dashboard/redacteur/stats");
+  },
+
+  getMyArticleById: async (id: number): Promise<Article> => {
+    return api.get<Article>(`/api/dashboard/redacteur/articles/${id}`);
+  },
+
+  getMyArticles: async (search = ""): Promise<Article[]> => {
+    return api.get<Article[]>("/api/dashboard/redacteur/articles", { search });
+  },
+
+  createMyArticle: async (data: {
+    title: string;
+    content: string;
+    image: string;
+    category_id: number;
+    status: "publié" | "brouillon" | "suspendu";
+  }) => {
+    return api.post("/api/dashboard/redacteur/articles", data);
+  },
+
+  updateMyArticle: async (
+    id: number,
+    data: {
+      title: string;
+      content: string;
+      image: string;
+      category_id: number;
+      status: "publié" | "brouillon" | "suspendu";
+    },
+  ) => {
+    return api.put(`/api/dashboard/redacteur/articles/${id}`, data);
+  },
+
+  deleteMyArticle: async (id: number) => {
+    return api.delete(`/api/dashboard/redacteur/articles/${id}`);
+  },
+
+  // ================= PASSWORD =================
+
+  changePassword: async (password: string) => {
+    return api.post("/api/auth/change-password", {
+      password,
+    });
+  },
 };
