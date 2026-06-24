@@ -40,11 +40,9 @@ export default function RequireRedacteur({
   // =========================
   // EXPIRATION CHECK
   // =========================
-const now = new Date().getTime();
+  const now = new Date().getTime();
 
-const isExpired = payload.exp
-  ? payload.exp * 1000 < now
-  : false;
+  const isExpired = payload.exp ? payload.exp * 1000 < now : false;
 
   if (isExpired) {
     return <Navigate to="/auth" replace />;
@@ -53,10 +51,7 @@ const isExpired = payload.exp
   // =========================
   // ROLE CHECK
   // =========================
-  if (
-    payload.role !== "administrateur" &&
-    payload.role !== "rédacteur"
-  ) {
+  if (payload.role !== "administrateur" && payload.role !== "rédacteur") {
     return <Navigate to="/" replace />;
   }
 

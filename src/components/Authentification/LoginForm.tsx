@@ -60,50 +60,49 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
 
   const navigate = useNavigate();
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!validate()) return;
+    if (!validate()) return;
 
-  setErrors({});
-  setIsLoading(true);
+    setErrors({});
+    setIsLoading(true);
 
-  try {
-    const data = await api.post<{
-      token: string;
-      user: {
-        id: number;
-        name: string;
-        email: string;
-        role: "rédacteur" | "administrateur";
-        mustChangePassword: boolean;
-      };
-    }>("/api/auth/login", {
-      email: form.email,
-      password: form.password,
-    });
+    try {
+      const data = await api.post<{
+        token: string;
+        user: {
+          id: number;
+          name: string;
+          email: string;
+          role: "rédacteur" | "administrateur";
+          mustChangePassword: boolean;
+        };
+      }>("/api/auth/login", {
+        email: form.email,
+        password: form.password,
+      });
 
-    login(data.token, data.user);
+      login(data.token, data.user);
 
-    if (data.user.role === "administrateur") {
-      navigate("/dashboard");
-    } else if (data.user.role === "rédacteur") {
-      navigate("/dashboard/redacteur");
-    } else {
-      navigate("/");
+      if (data.user.role === "administrateur") {
+        navigate("/dashboard");
+      } else if (data.user.role === "rédacteur") {
+        navigate("/dashboard/redacteur");
+      } else {
+        navigate("/");
+      }
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Erreur de connexion";
+
+      setErrors({ general: message });
+    } finally {
+      setIsLoading(false);
     }
-
-  } catch (error: any) {
-    const message =
-      error?.response?.data?.message ||
-      error?.message ||
-      "Erreur de connexion";
-
-    setErrors({ general: message });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     <div
