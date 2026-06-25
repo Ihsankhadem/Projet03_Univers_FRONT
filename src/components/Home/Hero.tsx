@@ -1,3 +1,4 @@
+// Hero.tsx
 import heroBg from "../../assets/espace.jpg";
 import Button from "../ui/Buttons";
 
