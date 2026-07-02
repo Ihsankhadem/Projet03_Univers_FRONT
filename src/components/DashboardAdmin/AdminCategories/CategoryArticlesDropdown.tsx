@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Article } from "../../../types";
 import { dashboardApi } from "../../../services/dashboardApi";
+import { FileText } from "lucide-react";
 
 interface Props {
   categoryId: number;
@@ -24,8 +25,9 @@ export default function CategoryArticlesDropdown({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 transition-all hover:border-slate-300 hover:bg-slate-100 hover:text-slate-800"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-[#EEF2FF] px-2.5 py-1 text-xs font-medium text-violet-700 transition-all hover:bg-violet-100"
       >
+        <FileText className="w-3 h-3" />
         {totalArticles.toLocaleString("fr-FR")} article
         {totalArticles > 1 ? "s" : ""}
         <span

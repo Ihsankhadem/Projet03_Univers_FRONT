@@ -1,3 +1,4 @@
+// src/components/DashboardAdmin/AdminEvents/EventTable.tsx
 import { Calendar, MapPin, Pencil, Trash2 } from "lucide-react";
 import type { Evenement } from "../../../types";
 

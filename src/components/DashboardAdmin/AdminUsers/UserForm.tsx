@@ -8,6 +8,10 @@ type Props = {
   setEmail: (v: string) => void;
   role: "rédacteur" | "administrateur";
   setRole: (v: "rédacteur" | "administrateur") => void;
+  errors?: {
+    name?: string;
+    email?: string;
+  };
 };
 
 export default function UserForm({
@@ -17,6 +21,7 @@ export default function UserForm({
   setEmail,
   role,
   setRole,
+  errors,
 }: Props) {
   return (
     <div className="space-y-6">
@@ -25,6 +30,7 @@ export default function UserForm({
         value={name}
         onChange={setName}
         placeholder="Ex : Nashi"
+        error={errors?.name}
       />
 
       <DashboardFormField
@@ -33,12 +39,14 @@ export default function UserForm({
         value={email}
         onChange={setEmail}
         placeholder="email@gmail.com"
+        error={errors?.email}
       />
 
       <div>
         <label className="mb-2 block text-sm font-medium text-slate-700">
           Rôle
         </label>
+
         <select
           value={role}
           onChange={(e) =>

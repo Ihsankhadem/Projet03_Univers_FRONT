@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Folder, FileText, Layers3, Users } from "lucide-react";
+
 import UsersTable from "../../components/DashboardAdmin/AdminUsers/UsersTable";
 import DashboardTabs from "../../components/DashboardAdmin/DashboardTabs";
 import DashboardSearch from "../../components/DashboardAdmin/DashboardSearch";
@@ -8,16 +9,21 @@ import DashboardHeader from "../../components/DashboardAdmin/DashboardHeader";
 import DashboardCard from "../../components/DashboardAdmin/DashboardCard";
 import DashboardModal from "../../components/DashboardAdmin/DashboardModal";
 import ArticlesPagination from "../../components/ui/Pagination";
-import { dashboardApi } from "../../services/dashboardApi";
-import type { Tab, User, UserStats } from "../../types";
 import DashboardSection from "../../components/DashboardAdmin/DashboardSection";
+import UserForm from "../../components/DashboardAdmin/AdminUsers/UserForm";
+
+import { dashboardApi } from "../../services/dashboardApi";
+import { userSchema } from "../../schemas/user.schema";
+import type { Tab, User, UserStats } from "../../types";
 
 export default function UsersPage() {
   const [activeTab, setActiveTab] = useState<Tab>("utilisateurs");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
   const [openForm, setOpenForm] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
@@ -25,9 +31,15 @@ export default function UsersPage() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"rédacteur" | "administrateur">("rédacteur");
 
-  const limit = 5;
-  const queryClient = useQueryClient();
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+  }>({});
 
+  const queryClient = useQueryClient();
+  const limit = 5;
+
+  // ================= USERS =================
   const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ["users"],
     queryFn: () => dashboardApi.getUsers(),
@@ -35,23 +47,51 @@ export default function UsersPage() {
 
   const allUsers = users ?? [];
 
+  // ================= VALIDATION =================
+  const validateUser = () => {
+    const result = userSchema.safeParse({ name, email, role });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+
+      setErrors({
+        name: fieldErrors.name?.[0],
+        email: fieldErrors.email?.[0],
+      });
+
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
+
+  // ================= SAVE =================
   const saveUserMutation = useMutation({
     mutationFn: async () => {
       if (editingUser) {
-        return dashboardApi.updateUser(editingUser.id, { name, email, role });
+        return dashboardApi.updateUser(editingUser.id, {
+          name,
+          email,
+          role,
+        });
       }
+
       return dashboardApi.createUser({ name, email, role });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
+
       setOpenForm(false);
       setEditingUser(null);
       setName("");
       setEmail("");
       setRole("rédacteur");
+      setErrors({});
     },
   });
 
+  // ================= DELETE =================
   const deleteMutation = useMutation({
     mutationFn: (id: number) => dashboardApi.deleteUser(id),
     onSuccess: () => {
@@ -61,6 +101,7 @@ export default function UsersPage() {
     },
   });
 
+  // ================= FILTER =================
   const filteredUsers = allUsers.filter((u) => {
     const v = `${u.name ?? ""}${u.email ?? ""}`.toLowerCase();
     return v.includes(search.toLowerCase());
@@ -69,6 +110,7 @@ export default function UsersPage() {
   const totalPages = Math.ceil(filteredUsers.length / limit);
   const paginatedUsers = filteredUsers.slice((page - 1) * limit, page * limit);
 
+  // ================= STATS =================
   const { data: stats, isLoading: loadingStats } = useQuery<UserStats>({
     queryKey: ["user-stats"],
     queryFn: dashboardApi.getUserStats,
@@ -79,6 +121,7 @@ export default function UsersPage() {
     <div className="min-h-screen bg-[#F8F7FF]">
       <DashboardHeader />
 
+      {/* ================= STATS ================= */}
       <div className="mt-8 px-8">
         <h2 className="mb-4 text-lg font-semibold text-slate-800">
           Vue d’ensemble
@@ -93,43 +136,37 @@ export default function UsersPage() {
               />
             ))}
           </div>
-        ) : stats ? (
+        ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <DashboardCard
               title="Utilisateurs"
-              value={stats.total_users}
+              value={stats?.total_users ?? 0}
               icon={<Folder className="h-4 w-4" />}
               accent="blue"
             />
-
             <DashboardCard
               title="Articles publiés"
-              value={stats.total_articles}
+              value={stats?.total_articles ?? 0}
               icon={<FileText className="h-4 w-4" />}
               accent="green"
             />
-
             <DashboardCard
               title="Administrateurs"
-              value={stats.total_admins}
+              value={stats?.total_admins ?? 0}
               icon={<Layers3 className="h-4 w-4" />}
               accent="purple"
             />
-
             <DashboardCard
               title="Rédacteurs"
-              value={stats.total_editors}
+              value={stats?.total_editors ?? 0}
               icon={<Users className="h-4 w-4" />}
               accent="amber"
             />
           </div>
-        ) : (
-          <div className="text-center text-slate-500 py-6">
-            Impossible de charger les statistiques.
-          </div>
         )}
       </div>
 
+      {/* ================= TABLE ================= */}
       <DashboardSection
         search={
           <DashboardSearch
@@ -184,7 +221,7 @@ export default function UsersPage() {
         />
       </DashboardSection>
 
-      {/* ================= CREATE / UPDATE MODAL ================= */}
+      {/* ================= FORM MODAL ================= */}
       <DashboardModal
         open={openForm}
         title={editingUser ? "Modifier l'utilisateur" : "Créer un utilisateur"}
@@ -202,35 +239,22 @@ export default function UsersPage() {
           setName("");
           setEmail("");
           setRole("rédacteur");
+          setErrors({});
         }}
-        onConfirm={() => saveUserMutation.mutate()}
+        onConfirm={() => {
+          if (!validateUser()) return;
+          saveUserMutation.mutate();
+        }}
       >
-        <div className="space-y-4">
-          <input
-            className="w-full rounded-xl border p-3"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nom"
-          />
-
-          <input
-            className="w-full rounded-xl border p-3"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-          />
-
-          <select
-            className="w-full rounded-xl border p-3"
-            value={role}
-            onChange={(e) =>
-              setRole(e.target.value as "rédacteur" | "administrateur")
-            }
-          >
-            <option value="rédacteur">Rédacteur</option>
-            <option value="administrateur">Administrateur</option>
-          </select>
-        </div>
+        <UserForm
+          name={name}
+          setName={setName}
+          email={email}
+          setEmail={setEmail}
+          role={role}
+          setRole={setRole}
+          errors={errors}
+        />
       </DashboardModal>
 
       {/* ================= DELETE MODAL ================= */}

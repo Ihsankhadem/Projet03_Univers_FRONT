@@ -1,4 +1,3 @@
-// DashboardAdmin/AdminCategories/CategoryModal.tsx
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -42,15 +41,13 @@ export default function CategoryModal({
             <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
 
             {description && (
-              <p className="mt-1 text-sm leading-relaxed text-slate-400">
-                {description}
-              </p>
+              <p className="mt-1 text-sm text-slate-400">{description}</p>
             )}
           </div>
 
           <button
             onClick={onClose}
-            className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
           >
             <X className="h-4 w-4" />
           </button>
@@ -61,7 +58,7 @@ export default function CategoryModal({
         <div className="mt-8 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
           >
             Annuler
           </button>
@@ -69,7 +66,7 @@ export default function CategoryModal({
           <button
             onClick={onConfirm}
             disabled={disabled || loading}
-            className={`rounded-xl px-5 py-2 text-sm font-medium text-white transition disabled:opacity-50 ${buttonStyle}`}
+            className={`rounded-xl px-5 py-2 text-sm text-white transition disabled:opacity-50 ${buttonStyle}`}
           >
             {loading ? "Chargement..." : confirmLabel}
           </button>

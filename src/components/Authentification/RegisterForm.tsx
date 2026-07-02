@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Lock, User, AlertCircle } from "lucide-react";
+import { Mail, Lock, User, AlertCircle, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import AuthField from "./AuthField";
 import Button from "../ui/Buttons";
@@ -171,14 +171,15 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           </button>
         </p>
 
-        <p className="text-center mt-2 text-sm">
+        <div className="mt-4 text-center">
           <Link
             to="/"
-            className="text-gray-500 hover:text-gray-300 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition group"
           >
-            ← Retour au site
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Retour à l’accueil
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

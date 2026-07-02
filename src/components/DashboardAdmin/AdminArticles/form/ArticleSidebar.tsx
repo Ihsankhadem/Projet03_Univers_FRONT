@@ -1,14 +1,15 @@
-// components/DashboardAdmin/AdminArticles/AddArticle/AddArticleSidebar.tsx
+// components/DashboardAdmin/AdminArticles/AddArticle/ArticleSidebar.tsx
 
 import { useAuth } from "../../../../Hooks/useAuth";
 import type { Category } from "../../../../types";
+import { uploadImage } from "../../../../services/upload.service";
 
 type Status = "publié" | "brouillon" | "suspendu";
-
 interface Props {
   categories: Category[];
+
   categoryId: number | null;
-  setCategoryId: (id: number) => void;
+  setCategoryId: (id: number | null) => void;
 
   author: string;
 
@@ -17,6 +18,11 @@ interface Props {
 
   image: string;
   setImage: (image: string) => void;
+
+  errors: {
+    categoryId?: string;
+    image?: string;
+  };
 }
 
 export default function AddArticleSidebar({
@@ -28,37 +34,31 @@ export default function AddArticleSidebar({
   setImage,
   setStatus,
   author,
+  errors,
 }: Props) {
-  useAuth();
-
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as Status;
     setStatus(value);
   };
 
-const uploadImage = async (file: File) => {
-  const formData = new FormData();
+  const { token } = useAuth();
+  const handleUpload = async (file: File) => {
+    if (!token) {
+      console.error("No token available");
+      return;
+    }
 
-  formData.append("file", file);
-  formData.append("upload_preset", "univers");
+    try {
+      const url = await uploadImage(file, token);
 
-  try {
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dqm1kobls/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
+      console.log("UPLOAD URL =", url);
 
-    const data = await res.json();
+      setImage(url);
+    } catch (err) {
+      console.error("Upload error", err);
+    }
+  };
 
-    setImage(data.secure_url);
-
-  } catch (err) {
-    console.error(err);
-  }
-};
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
       <h3 className="text-lg font-bold text-slate-800">Informations</h3>
@@ -76,17 +76,22 @@ const uploadImage = async (file: File) => {
 
             if (!file) return;
 
-            uploadImage(file);
+            handleUpload(file);
           }}
-          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm"
+          className={`w-full bg-slate-50 border rounded-2xl px-4 py-3 text-sm ${
+            errors.image ? "border-red-400" : "border-slate-200"
+          }`}
         />
+
+        {errors.image && (
+          <p className="mt-2 text-sm text-red-500">{errors.image}</p>
+        )}
 
         {image && (
           <img src={image} className="mt-3 w-full rounded-2xl object-cover" />
         )}
       </div>
 
-      {/* AUTEUR */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Auteur
@@ -99,7 +104,6 @@ const uploadImage = async (file: File) => {
         />
       </div>
 
-      {/* CATÉGORIE */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Catégorie
@@ -107,8 +111,14 @@ const uploadImage = async (file: File) => {
 
         <select
           value={categoryId ?? ""}
-          onChange={(e) => setCategoryId(Number(e.target.value))}
-          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm"
+          onChange={(e) => {
+            const value = e.target.value;
+
+            setCategoryId(value ? Number(value) : null);
+          }}
+          className={`w-full bg-slate-50 border rounded-2xl px-4 py-3 text-sm ${
+            errors.categoryId ? "border-red-400" : "border-slate-200"
+          }`}
         >
           <option value="">Sélectionner</option>
 
@@ -118,9 +128,12 @@ const uploadImage = async (file: File) => {
             </option>
           ))}
         </select>
+
+        {errors.categoryId && (
+          <p className="mt-2 text-sm text-red-500">{errors.categoryId}</p>
+        )}
       </div>
 
-      {/* STATUT */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Statut
@@ -139,4 +152,3 @@ const uploadImage = async (file: File) => {
     </div>
   );
 }
-

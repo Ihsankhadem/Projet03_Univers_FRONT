@@ -6,6 +6,7 @@ import type { NasaImage } from "../types";
 
 const PAGE_SIZE = 6;
 const INITIAL_LOAD = 6;
+const CACHE_KEY = "nasa_gallery_cache";
 
 export default function GalleryPage() {
   const [images, setImages] = useState<NasaImage[]>([]);
@@ -14,28 +15,69 @@ export default function GalleryPage() {
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
 
   useEffect(() => {
-    async function fetchImages() {
+    let isMounted = true;
+
+    async function load() {
       try {
-        const data = await api.get<NasaImage[]>("/api/nasa/apod/last", {
-          count: 20,
-        });
+        setLoading(true);
 
-        const onlyImages = data.filter((img) => img.media_type === "image");
+        // ⚡ 1. CACHE SAFE
+        const cached = localStorage.getItem(CACHE_KEY);
 
-        setImages(onlyImages);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              if (isMounted) {
+                setImages(parsed);
+                setLoading(false);
+              }
+              return;
+            }
+          } catch {
+            localStorage.removeItem(CACHE_KEY);
+          }
+        }
+
+        // ⚡ 2. API CALL SAFE
+        const data = await api.get<NasaImage[]>("/api/nasa/apod/last?count=15");
+
+        if (!Array.isArray(data)) {
+          console.warn("API returned invalid data:", data);
+          if (isMounted) setImages([]);
+          return;
+        }
+
+        // ⚡ 3. FILTER SAFE (moins strict pour éviter 0 résultat)
+        const onlyImages = data.filter((img) => img?.url);
+
+        // ⚡ 4. CACHE SAVE
+        localStorage.setItem(CACHE_KEY, JSON.stringify(onlyImages));
+
+        if (isMounted) {
+          setImages(onlyImages);
+        }
       } catch (err) {
-        console.error(err);
+        console.error("NASA error:", err);
+        if (isMounted) setImages([]);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
-    fetchImages();
+    load();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filtered = useMemo(() => {
+    const lower = search.toLowerCase();
+
     return images.filter((img) =>
-      img.title.toLowerCase().includes(search.toLowerCase()),
+      (img.title || "").toLowerCase().includes(lower),
     );
   }, [images, search]);
 
@@ -63,13 +105,13 @@ export default function GalleryPage() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setVisibleCount(INITIAL_LOAD); // reset
+            setVisibleCount(INITIAL_LOAD);
           }}
           placeholder="Rechercher..."
           className="mb-8 w-full rounded-xl bg-[#0F172A] px-4 py-3 text-white"
         />
 
-        {loading ? (
+        {loading && images.length === 0 ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
@@ -90,6 +132,7 @@ export default function GalleryPage() {
                     src={img.url}
                     alt={img.title}
                     loading="lazy"
+                    decoding="async"
                     className="w-full object-cover"
                   />
 
