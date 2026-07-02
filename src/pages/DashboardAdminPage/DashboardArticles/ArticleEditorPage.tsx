@@ -35,6 +35,11 @@ export default function ArticleEditorPage() {
     "brouillon",
   );
 
+  const getDashboardHome = (role?: string) => {
+    if (role === "administrateur") return "/dashboard";
+    return "/dashboard/redacteur";
+  };
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -153,7 +158,7 @@ export default function ArticleEditorPage() {
         }
       }
 
-      navigate("/dashboard/redacteur");
+      navigate(getDashboardHome(user?.role));
     } catch (err) {
       console.error("Erreur création/modification article :", err);
     } finally {
@@ -201,7 +206,7 @@ export default function ArticleEditorPage() {
               />
 
               <ArticleActions
-                onCancel={() => navigate("/dashboard/redacteur")}
+                onCancel={() => navigate(getDashboardHome(user?.role))}
               />
             </div>
           </div>

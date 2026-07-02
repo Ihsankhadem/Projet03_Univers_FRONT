@@ -51,8 +51,6 @@ export default function AddArticleSidebar({
     try {
       const url = await uploadImage(file, token);
 
-      console.log("UPLOAD URL =", url);
-
       setImage(url);
     } catch (err) {
       console.error("Upload error", err);
