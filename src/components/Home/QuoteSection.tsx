@@ -7,12 +7,11 @@ export default function QuoteSection() {
           Citation
         </p>
         <blockquote className="text-2xl md:text-3xl font-semibold italic leading-relaxed text-slate-100">
-          "La philosophie est écrite dans ce grand livre qui s'étend chaque jour
-          devant nos yeux : l'univers. Mais on ne peut le comprendre si nous
-          n'apprenons d'abord son langage et si nous ne comprenons les symboles
-          avec lesquels il est écrit."
+          "Les deux possibilités existent : soit nous sommes seuls dans
+          l'Univers, soit nous ne le sommes pas. Les deux sont tout aussi
+          effrayantes."
         </blockquote>
-        <p className="mt-6 text-violet-200 font-medium">— Par Galilée</p>
+        <p className="mt-6 text-violet-200 font-medium">— Arthur C. Clarke</p>
       </div>
     </section>
   );
