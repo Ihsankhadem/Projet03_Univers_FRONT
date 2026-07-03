@@ -47,7 +47,9 @@ export default function ArticlesPage() {
         const [arts, cats, space] = await Promise.all([
           api.get<Article[]>("/api/articles"),
           api.get<Category[]>("/api/categories"),
-          api.get<SpaceflightResponse>("/api/spaceflight/articles?limit=25"),
+
+          // ⚡ réduit charge initiale
+          api.get<SpaceflightResponse>("/api/spaceflight/articles?limit=12"),
         ]);
 
         setArticles(arts || []);
