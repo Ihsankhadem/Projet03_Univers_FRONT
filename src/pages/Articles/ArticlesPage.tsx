@@ -1,11 +1,14 @@
 // src/pages/Articles/ArticlesPage.tsx
+
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../services/api";
+
 import ArticleCard from "../../components/Articles/ArticleCard";
 import SpaceArticleCard from "../../components/Articles/SpaceArticleCard";
 import ArticlesHero from "../../components/Articles/ArticlesHero";
 import ArticlesFilters from "../../components/Articles/ArticlesFilters";
 import ArticlesPagination from "../../components/ui/Pagination";
+
 import type { Article, Category, SpaceflightResponse } from "../../types";
 
 const ITEMS_PER_PAGE = 9;
@@ -15,6 +18,7 @@ export default function ArticlesPage() {
   const [spaceArticles, setSpaceArticles] = useState<
     SpaceflightResponse["results"]
   >([]);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,11 +28,10 @@ export default function ArticlesPage() {
   const [selectedCat, setSelectedCat] = useState<number | null>(null);
   const [source, setSource] = useState<"all" | "bdd" | "space">("all");
   const [sort, setSort] = useState<"date" | "views">("date");
+
   const [page, setPage] = useState(1);
 
-  /* =========================
-     SEARCH DEBOUNCE
-  ========================= */
+  /* ========================= SEARCH DEBOUNCE ========================= */
   useEffect(() => {
     const t = setTimeout(() => {
       setSearch(searchInput);
@@ -38,18 +41,14 @@ export default function ArticlesPage() {
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  /* =========================
-     LOAD DATA (FAST)
-  ========================= */
+  /* ========================= LOAD DATA (FAST) ========================= */
   useEffect(() => {
     const load = async () => {
       try {
         const [arts, cats, space] = await Promise.all([
           api.get<Article[]>("/api/articles"),
           api.get<Category[]>("/api/categories"),
-
-          // ⚡ réduit charge initiale
-          api.get<SpaceflightResponse>("/api/spaceflight/articles?limit=12"),
+          api.get<SpaceflightResponse>("/api/spaceflight/articles?limit=25"),
         ]);
 
         setArticles(arts || []);
@@ -65,9 +64,7 @@ export default function ArticlesPage() {
     load();
   }, []);
 
-  /* =========================
-     SPACE NORMALIZATION (MEMO)
-  ========================= */
+  /* ========================= SPACE NORMALIZATION (MEMO) ========================= */
   const normalizedSpace = useMemo(() => {
     return spaceArticles.map((s) => ({
       id: s.id,
@@ -85,28 +82,25 @@ export default function ArticlesPage() {
     }));
   }, [spaceArticles]);
 
-  /* =========================
-     MERGE DATA
-  ========================= */
+  /* ========================= MERGE DATA ========================= */
   const merged = useMemo(() => {
     return [
-      ...articles.map((a) => ({ ...a, source: "bdd" as const })),
+      ...articles.map((a) => ({
+        ...a,
+        source: "bdd" as const,
+      })),
       ...normalizedSpace,
     ];
   }, [articles, normalizedSpace]);
 
-  /* =========================
-     FILTER SOURCE
-  ========================= */
+  /* ========================= FILTER SOURCE ========================= */
   const sourceFiltered = useMemo(() => {
     if (source === "bdd") return merged.filter((a) => a.source === "bdd");
     if (source === "space") return merged.filter((a) => a.source === "space");
     return merged;
   }, [merged, source]);
 
-  /* =========================
-     FILTER + SEARCH + SORT
-  ========================= */
+  /* ========================= FILTER + SEARCH + SORT ========================= */
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
 
@@ -126,9 +120,7 @@ export default function ArticlesPage() {
       );
   }, [sourceFiltered, selectedCat, search, sort]);
 
-  /* =========================
-     PAGINATION
-  ========================= */
+  /* ========================= PAGINATION ========================= */
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)),
     [filtered.length],
@@ -139,9 +131,7 @@ export default function ArticlesPage() {
     return filtered.slice(start, start + ITEMS_PER_PAGE);
   }, [filtered, page]);
 
-  /* =========================
-     UI
-  ========================= */
+  /* ========================= UI ========================= */
   return (
     <div className="min-h-screen bg-[#0B0F1A]">
       <ArticlesHero />
