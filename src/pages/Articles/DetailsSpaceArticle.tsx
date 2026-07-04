@@ -1,7 +1,9 @@
 // src/pages/Articles/DetailsSpaceArticle.tsx
+
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
+
 import { api } from "../../services/api";
 
 import ArticleHero from "../../components/Articles/Details/ArticleHero";
@@ -11,9 +13,8 @@ import SpaceArticleCard from "../../components/Articles/SpaceArticleCard";
 
 import type { SpaceArticle, Article } from "../../types";
 
-// =====================
-// TRANSFORM (memo-safe)
-// =====================
+/* ===================== TRANSFORM (memo-safe) ===================== */
+
 const toArticle = (s: SpaceArticle): Article => ({
   id: s.id,
   title: s.title,
@@ -36,9 +37,8 @@ export default function DetailsSpaceArticle() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // =====================
-  // FETCH OPTIMISÉ
-  // =====================
+  /* ===================== FETCH OPTIMISÉ ===================== */
+
   useEffect(() => {
     if (!id) return;
 
@@ -48,7 +48,6 @@ export default function DetailsSpaceArticle() {
       try {
         setLoading(true);
         setError(false);
-
         window.scrollTo(0, 0);
 
         // 🔥 PARALLÈLE (beaucoup plus rapide)
@@ -83,14 +82,12 @@ export default function DetailsSpaceArticle() {
     };
   }, [id]);
 
-  // =====================
-  // MEMO RELATED CARDS
-  // =====================
+  /* ===================== MEMO RELATED CARDS ===================== */
+
   const relatedCards = useMemo(() => related.map(toArticle), [related]);
 
-  // =====================
-  // LOADING
-  // =====================
+  /* ===================== LOADING ===================== */
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center text-slate-500">
@@ -99,9 +96,8 @@ export default function DetailsSpaceArticle() {
     );
   }
 
-  // =====================
-  // ERROR
-  // =====================
+  /* ===================== ERROR ===================== */
+
   if (error || !article) {
     return (
       <div className="min-h-screen bg-[#0B0F1A] flex flex-col items-center justify-center gap-4">
@@ -116,9 +112,8 @@ export default function DetailsSpaceArticle() {
     );
   }
 
-  // =====================
-  // UI
-  // =====================
+  /* ===================== UI ===================== */
+
   return (
     <div className="min-h-screen bg-[#0B0F1A]">
       <ArticleHero image={article.image_url} title={article.title} />
