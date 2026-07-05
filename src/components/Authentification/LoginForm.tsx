@@ -35,7 +35,7 @@ const FIELDS = [
   },
 ] as const;
 
-export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
+export default function LoginForm({ onSwitch }: { onSwitch?: () => void }) {
   const [form, setForm] = useState<FormData>({ email: "", password: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +155,7 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           </Button>
         </form>
 
-        <p className="text-center mt-5 text-sm text-gray-400">
+        {/* <p className="text-center mt-5 text-sm text-gray-400">
           Pas encore de compte ?{" "}
           <button
             onClick={onSwitch}
@@ -163,7 +163,7 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           >
             Créer un compte
           </button>
-        </p>
+        </p> */}
 
         <div className="mt-4 text-center">
           <Link

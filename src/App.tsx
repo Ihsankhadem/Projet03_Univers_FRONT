@@ -24,7 +24,7 @@ import RequireRedacteur from "./routes/RequireRedacteur";
 import RequireDashboard from "./routes/RequireDashboard";
 
 import "./index.css";
-
+ 
 const AUTH_ROUTES = ["/auth"];
 
 function Layout() {
