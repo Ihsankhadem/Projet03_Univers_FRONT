@@ -46,6 +46,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("user", JSON.stringify(user));
   }, []);
 
+  const updateUser = useCallback((updatedUser: User) => {
+    setUser(updatedUser);
+
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  }, []);
+
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
@@ -63,6 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         loading,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

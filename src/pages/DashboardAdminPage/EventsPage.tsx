@@ -63,6 +63,9 @@ export default function EventsPage() {
       .includes(search.toLowerCase()),
   );
 
+  const today = new Date();
+  const upcomingEvents = events.filter((e) => new Date(e.date) >= today).length;
+  const pastEvents = events.filter((e) => new Date(e.date) < today).length;
   const totalPages = Math.ceil(filtered.length / limit);
   const paginated = filtered.slice((page - 1) * limit, page * limit);
 
@@ -142,12 +145,28 @@ export default function EventsPage() {
       <DashboardHeader />
 
       <div className="mt-8 px-8">
-        <DashboardCard
-          title="Événements"
-          value={events.length}
-          icon={<Calendar />}
-          accent="purple"
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <DashboardCard
+            title="Événements"
+            value={events.length}
+            icon={<Calendar />}
+            accent="purple"
+          />
+
+          <DashboardCard
+            title="À venir"
+            value={upcomingEvents}
+            icon={<Calendar />}
+            accent="green"
+          />
+
+          <DashboardCard
+            title="Passés"
+            value={pastEvents}
+            icon={<Calendar />}
+            accent="amber"
+          />
+        </div>
       </div>
 
       <DashboardSection
@@ -194,7 +213,6 @@ export default function EventsPage() {
             setTitle(event.title ?? "");
             setDate(formattedDate);
 
-            // Correction format HH:mm
             setStartTime(event.start_time?.slice(0, 5) ?? "");
             setEndTime(event.end_time?.slice(0, 5) ?? "");
 
@@ -203,11 +221,6 @@ export default function EventsPage() {
             setExternalUrl(event.external_url ?? "");
 
             setOpenForm(true);
-          }}
-          onDelete={(id) => {
-            console.log("🗑️ DELETE CLICK", id);
-            setEventToDelete(events.find((e) => e.id === id) || null);
-            setOpenDelete(true);
           }}
         />
       </DashboardSection>

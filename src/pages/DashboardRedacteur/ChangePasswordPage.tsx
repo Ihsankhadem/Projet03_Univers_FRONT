@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { dashboardApi } from "../../services/dashboardApi";
+import { useAuth } from "../../Hooks/useAuth";
+import { Eye, EyeOff } from "lucide-react";
 import PopConfirm from "../../components/ui/PopConfirming";
 
 export default function ChangePasswordPage() {
@@ -17,6 +19,8 @@ export default function ChangePasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const { user, updateUser } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +45,13 @@ export default function ChangePasswordPage() {
       setLoading(true);
 
       await dashboardApi.changePassword(password);
+
+      if (user) {
+        updateUser({
+          ...user,
+          mustChangePassword: false,
+        });
+      }
 
       setConfirmOpen(false);
 
@@ -78,12 +89,12 @@ export default function ChangePasswordPage() {
               </p>
             </div>
 
-            <button
+            {/* <button
               onClick={() => navigate("/dashboard/redacteur")}
               className="text-sm text-slate-500 hover:text-slate-900 transition"
             >
               Retour
-            </button>
+            </button> */}
           </div>
 
           {/* FORM */}
@@ -107,9 +118,13 @@ export default function ChangePasswordPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900 transition"
                   >
-                    {showPassword ? "🙈" : "👁️"}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -132,9 +147,13 @@ export default function ChangePasswordPage() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900 transition"
                   >
-                    {showConfirmPassword ? "🙈" : "👁️"}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </div>

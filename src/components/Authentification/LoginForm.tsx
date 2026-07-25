@@ -85,6 +85,11 @@ export default function LoginForm({ onSwitch }: { onSwitch?: () => void }) {
 
       login(data.token, data.user);
 
+      if (data.user.mustChangePassword) {
+        navigate("/dashboard/change-password");
+        return;
+      }
+
       if (data.user.role === "administrateur") {
         navigate("/dashboard");
       } else if (data.user.role === "rédacteur") {
@@ -143,12 +148,12 @@ export default function LoginForm({ onSwitch }: { onSwitch?: () => void }) {
             />
           ))}
 
-          <Link
+          {/* <Link
             to="/mot-de-passe-oublie"
             className="text-sm font-medium text-purple-300 hover:text-white transition-colors self-end -mt-2"
           >
             Mot de passe oublié ?
-          </Link>
+          </Link> */}
 
           <Button variant="auth" isLoading={isLoading} loadingText="Connexion…">
             Se connecter →
