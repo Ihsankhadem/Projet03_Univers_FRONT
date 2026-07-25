@@ -14,6 +14,5 @@ export const uploadImage = async (file: File, token?: string | null) => {
   if (!res.ok) throw new Error("Upload failed");
 
   const data = await res.json();
-  console.log(data);
   return data.url as string;
 };

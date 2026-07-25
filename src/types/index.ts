@@ -129,8 +129,11 @@ export interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
+
   login: (token: string, user: User) => void;
   logout: () => void;
+
+  updateUser: (user: User) => void;
 }
 
 export interface ChangePasswordPayload {

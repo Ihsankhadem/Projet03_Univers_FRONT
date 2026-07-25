@@ -117,7 +117,7 @@
 
 //   return (
 //     <div
-//       className="min-h-screen flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden 
+//       className="min-h-screen flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden
 //   bg-gradient-to-br from-[#020617] via-[#0F172A] to-[#020617]"
 //     >
 //       {/* Glow */}
