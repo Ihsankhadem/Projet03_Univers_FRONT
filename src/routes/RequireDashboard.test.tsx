@@ -4,19 +4,19 @@ import { describe, it, expect, vi } from "vitest";
 // screen = permet de récupérer des éléments rendus (getByText, queryByText, etc.)
 import { render, screen } from "@testing-library/react";
 
+// MemoryRouter = version simplifiée de React Router pour les tests
+// Nécessaire car RequireDashboard utilise useLocation() et <Navigate>
+import { MemoryRouter } from "react-router-dom";
+
 import RequireDashboard from "./RequireDashboard";
 
-// On MOCK le hook useAuth = on simule UseAuth pour contrôler ce qu'il renvoie dans les tests.
+// On MOCK le hook useAuth = on simule useAuth pour contrôler ce qu'il renvoie dans les tests.
 vi.mock("../Hooks/useAuth", () => ({
-  useAuth: vi.fn(), // on remplace useAuth par une fonction mockée
+  useAuth: vi.fn(),
 }));
 
 // On importe le hook mocké pour pouvoir définir ce qu'il renvoie
 import { useAuth } from "../Hooks/useAuth";
-
-// MemoryRouter = version simplifiée de React Router pour les tests
-// Nécessaire uniquement quand le composant utilise <Navigate> ou <Link>
-import { MemoryRouter } from "react-router-dom";
 
 describe("RequireDashboard", () => {
   // Cas 1 : l'utilisateur est administrateur → accès autorisé
@@ -28,11 +28,13 @@ describe("RequireDashboard", () => {
       },
     } as any);
 
-    // On rend le composant
+    // MemoryRouter est nécessaire car RequireDashboard utilise useLocation()
     render(
-      <RequireDashboard>
-        <div>Dashboard</div>
-      </RequireDashboard>,
+      <MemoryRouter>
+        <RequireDashboard>
+          <div>Dashboard</div>
+        </RequireDashboard>
+      </MemoryRouter>,
     );
 
     // Le texte "Dashboard" doit être présent → accès OK
@@ -49,9 +51,11 @@ describe("RequireDashboard", () => {
     } as any);
 
     render(
-      <RequireDashboard>
-        <div>Dashboard</div>
-      </RequireDashboard>,
+      <MemoryRouter>
+        <RequireDashboard>
+          <div>Dashboard</div>
+        </RequireDashboard>
+      </MemoryRouter>,
     );
 
     // Le texte doit être affiché → rédacteur autorisé
@@ -65,8 +69,7 @@ describe("RequireDashboard", () => {
       user: null,
     } as any);
 
-    // Ici on doit envelopper dans MemoryRouter
-    // car RequireDashboard utilise probablement <Navigate />
+    // MemoryRouter est nécessaire car RequireDashboard utilise <Navigate />
     render(
       <MemoryRouter>
         <RequireDashboard>
